@@ -1,6 +1,14 @@
 use NativeCall;
 
-constant LIB = 'libgd.so';
+# point NativeCall to correct library
+# (may become obsolete in the future)
+sub LIB  {
+    given $*VM{'config'}{'load_ext'} {
+        when '.so'      { return 'libgd.so' }       # Linux
+        when '.bundle'  { return 'libgd.dylib' }    # Mac OS
+        default         { return 'libgd' }
+    }
+}
 
 enum GD_Format <GD_GIF GD_JPEG GD_PNG>;
 

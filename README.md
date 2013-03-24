@@ -7,7 +7,7 @@ Perl 6 interface to the Gd graphics library.
 Description
 -----------
 Perl6 interface to Thomas Boutell's [gd graphics library][2]. GD allows you to create color drawings using a large number of graphics primitives, and emit the drawings in multiple formats.
-You will need the gd-libgd library installed in order to use perl6-GD (preferably a recent version).
+You will need the Linux `gd-libgd` library or OS X `gd2` port installed in order to use perl6-GD (preferably a recent version).
 
 Synopsis
 --------

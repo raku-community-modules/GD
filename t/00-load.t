@@ -1,4 +1,7 @@
 use v6;
+
+BEGIN @*INC.unshift('lib');
+
 use Test;
 
 plan 1;

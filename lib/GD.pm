@@ -1,13 +1,16 @@
 use NativeCall;
 
+use soft; # for now
+use Inline;
+
 # point NativeCall to correct library
 # (may become obsolete in the future)
 sub LIB  {
-    given $*VM{'config'}{'load_ext'} {
-        when '.so'      { return 'libgd.so' }       # Linux
-        when '.bundle'  { return 'libgd.dylib' }    # Mac OS
-        default         { return 'libgd' }
-    }
+	given $*VM{'config'}{'load_ext'} {
+		when '.so'      { return 'libgd.so' }		# Linux
+		when '.bundle'  { return 'libgd.dylib' }	# Mac OS
+		default         { return 'libgd' }
+	}
 }
 
 enum GD_Format <GD_GIF GD_JPEG GD_PNG>;
@@ -30,6 +33,45 @@ class GD::File is repr('CPointer') {
 }
 
 class GD::Image is repr('CPointer') {
+
+	# This is pretty ugly so I'm looking for a more elegant solution...
+	sub GD_add_point(OpaquePointer, int32 $idx, int32 $x, int32 $y) is inline('C') {'
+		typedef struct {
+			int x;
+			int y;
+		} gdPoint, *gdPointPtr;
+
+		DLLEXPORT void GD_add_point(gdPointPtr points, int idx, int x, int y) {
+			points[idx].x = x;
+			points[idx].y = y;
+		}
+	'}
+
+	sub GD_new_set_of_points(int32 $size)
+		is inline('C') returns OpaquePointer {'
+		#include <stdlib.h>
+
+		typedef struct {
+			int x;
+			int y;
+		} gdPoint, *gdPointPtr;
+
+		DLLEXPORT gdPointPtr GD_new_set_of_points(int size) {
+			gdPointPtr points;
+
+			points = (gdPointPtr)malloc(size * sizeof(gdPoint));
+			return points;
+		}
+	'}
+
+	sub gdImagePolygon(GD::Image, OpaquePointer, int32, int32)
+		is native(LIB) { ... };
+
+	sub gdImageOpenPolygon(GD::Image, OpaquePointer, int32, int32)
+		is native(LIB) { ... };
+
+	sub gdImageFilledPolygon(GD::Image, OpaquePointer, int32, int32)
+		is native(LIB) { ... };
 
 	sub gdImageGif(GD::Image, GD::File)
 		is native(LIB) { ... };
@@ -65,6 +107,9 @@ class GD::Image is repr('CPointer') {
 		is native(LIB) { ... };
 
 	sub gdImageFilledEllipse(GD::Image, int32, int32, int32, int32, int32)
+		is native(LIB) { ... };
+
+	sub gdFree(OpaquePointer)
 		is native(LIB) { ... };
 
 	sub gdImageDestroy(GD::Image)
@@ -126,7 +171,7 @@ class GD::Image is repr('CPointer') {
 		Parcel :$center!(Int $cx, Int $cy),
 		Parcel :$amplitude!(Int $w where { $w > 0 }, Int $h where { $h > 0 }),
 		Parcel :$aperture!(Int $s, Int $e),
-		   Int :$color where { $color >= 0 } = gdImageColorAllocate(self, 0, 0, 0),
+		   Int :$color where { $color >= 0 } = 0,
 		  Bool :$fill = False,
 		   Int :$style = 0) {
 
@@ -157,6 +202,30 @@ class GD::Image is repr('CPointer') {
 			gdImageArc(self, $cx, $cy, $diameter, $diameter, 0, 0, $color);
 	}
 
+	method polygon(
+		 Int :@points! where { @points.elems >= 6 && @points.elems % 2 == 0 },
+		 Int :$color where { $color >= 0 } = 0,
+		Bool :$fill = False,
+		Bool :$open = False) returns OpaquePointer {
+
+		my $n_array = @points.elems;
+		my $gdPoints = GD_new_set_of_points(($n_array/2).Int);
+
+		my $n = 0;
+		for @points -> $x, $y {
+			GD_add_point($gdPoints, $n, $x, $y);
+			$n++;
+		}
+
+		$fill ??
+			gdImageFilledPolygon(self, $gdPoints, $n, $color) !!
+			$open ??
+				gdImageOpenPolygon(self, $gdPoints, $n, $color) !!
+				gdImagePolygon(self, $gdPoints, $n, $color);
+
+		return $gdPoints;
+	}
+
 	method open(Str $filename, Str $mode) returns GD::File {
 		return GD::File.new($filename, $mode);
 	}
@@ -167,6 +236,10 @@ class GD::Image is repr('CPointer') {
 			gdImageJpeg(self, $filepointer, $quality) when GD_JPEG;
 			gdImagePng(self, $filepointer) when GD_PNG;
 		}
+	}
+
+	method free(OpaquePointer $storage) {
+		gdFree($storage);
 	}
 
 	method destroy() {

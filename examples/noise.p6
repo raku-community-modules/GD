@@ -15,7 +15,7 @@ my $blue = $image.colorAllocate("#0000ff");
 my $yellow = $image.colorAllocate("#ffff00");
 my $violet = $image.colorAllocate("#ff00ff");
 
-my @colors = ($white, $red, $green, $blue);
+my @colors = ($white, $red, $green, $blue, $yellow, $violet);
 
 $image.rectangle(
 	location => (0, 0),

@@ -62,6 +62,8 @@ The perl6 API
 
 =head2 Drawing Commands
 
+=head3 C<pixel>
+
 =head3 C<line>
 
 =head3 C<rectangle>

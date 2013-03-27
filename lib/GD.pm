@@ -64,15 +64,6 @@ class GD::Image is repr('CPointer') {
 		}
 	'}
 
-	sub gdImagePolygon(GD::Image, OpaquePointer, int32, int32)
-		is native(LIB) { ... };
-
-	sub gdImageOpenPolygon(GD::Image, OpaquePointer, int32, int32)
-		is native(LIB) { ... };
-
-	sub gdImageFilledPolygon(GD::Image, OpaquePointer, int32, int32)
-		is native(LIB) { ... };
-
 	sub gdImageGif(GD::Image, GD::File)
 		is native(LIB) { ... };
 
@@ -87,7 +78,10 @@ class GD::Image is repr('CPointer') {
 	
 	sub gdImageColorAllocate(GD::Image, int32, int32, int32)
 		returns int32 is native(LIB) { ... };
- 
+
+	sub gdImageSetPixel(GD::Image, int32, int32, int32)
+		is native(LIB) { ... };
+		
 	sub gdImageLine(GD::Image, int32, int32, int32, int32, int32)
 		is native(LIB) { ... };
 
@@ -107,6 +101,15 @@ class GD::Image is repr('CPointer') {
 		is native(LIB) { ... };
 
 	sub gdImageFilledEllipse(GD::Image, int32, int32, int32, int32, int32)
+		is native(LIB) { ... };
+
+	sub gdImagePolygon(GD::Image, OpaquePointer, int32, int32)
+		is native(LIB) { ... };
+
+	sub gdImageOpenPolygon(GD::Image, OpaquePointer, int32, int32)
+		is native(LIB) { ... };
+
+	sub gdImageFilledPolygon(GD::Image, OpaquePointer, int32, int32)
 		is native(LIB) { ... };
 
 	sub gdFree(OpaquePointer)
@@ -145,6 +148,14 @@ class GD::Image is repr('CPointer') {
 		my $blue = (($hex_value) +& 0xFF).Int;
 
 		return gdImageColorAllocate(self, $red, $green, $blue);
+	}
+
+	method pixel(
+		Int $x where { $x >= 0 },
+		Int $y where { $y >= 0 },
+		Int $color where { $color >= 0 } = 0) {
+
+		gdImageSetPixel(self, $x, $y, $color);
 	}
 
 	method line(

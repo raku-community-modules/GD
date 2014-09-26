@@ -132,7 +132,7 @@ class GD::Image is repr('CPointer') {
 		return gdImageColorAllocate(self, $red, $green, $blue);
 	}
 
-	multi method colorAllocate(Str $hexstr where /^\#<[A..Fa..f\d]>**6$/) returns Int {
+	multi method colorAllocate(Str $hexstr where /^ '#' <[A..Fa..f\d]>**6 $/) returns Int {
 
 		my $red = ("0x" ~ $hexstr.substr(1,2)).Int;
 		my $green = ("0x" ~ $hexstr.substr(3,2)).Int;

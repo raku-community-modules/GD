@@ -45,6 +45,6 @@ ok "t/test.png".IO.e, "Some sort of test.png written";
 
 $image.destroy();
 
-ok 1, 'Survived $image.destory';
+ok 1, 'Survived $image.destroy';
 
 done;

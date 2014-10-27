@@ -5,5 +5,5 @@
 	"author" : "Henrique Dias",
 	"depends" : [ "NativeCall", "Inline" ],
 	"source-type" : "git",
-	"source-url" : "git://github.com/mrhdias/perl6-GD.git"
+	"source-url" : "git://github.com/perl6-community-modules/perl6-GD.git"
 }

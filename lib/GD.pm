@@ -130,16 +130,16 @@ class GD::Image is repr('CPointer') {
 	}
 
 	method line(
-		Parcel :$start(Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
-		Parcel :$end!(Int $x2 where { $x2 > 0 }, Int $y2 where { $y2 > 0 }),
+		List :$start (Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
+		List :$end! (Int $x2 where { $x2 > 0 }, Int $y2 where { $y2 > 0 }),
 		   Int :$color where { $color >= 0 } = 0) {
 
 		gdImageLine(self, $x1, $y1, $x2, $y2, $color);
 	}
 
 	method rectangle(
-		Parcel :$location(Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
-		Parcel :$size!(Int $x2 where { $x2 > 0 }, Int $y2 where { $y2 > 0 }),
+		List :$location (Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
+		List :$size! (Int $x2 where { $x2 > 0 }, Int $y2 where { $y2 > 0 }),
 		   Int :$color where { $color >= 0 } = 0,
 		  Bool :$fill = False) {
 
@@ -150,9 +150,9 @@ class GD::Image is repr('CPointer') {
 
 	# style to enum
 	method arc(
-		Parcel :$center!(Int $cx, Int $cy),
-		Parcel :$amplitude!(Int $w where { $w > 0 }, Int $h where { $h > 0 }),
-		Parcel :$aperture!(Int $s, Int $e),
+		List :$center!(Int $cx, Int $cy),
+		List :$amplitude!(Int $w where { $w > 0 }, Int $h where { $h > 0 }),
+		List :$aperture!(Int $s, Int $e),
 		   Int :$color where { $color >= 0 } = 0,
 		  Bool :$fill = False,
 		   Int :$style = 0) {
@@ -163,8 +163,8 @@ class GD::Image is repr('CPointer') {
 	}
 
 	method ellipse(
-		Parcel :$center!(Int $cx, Int $cy),
-		Parcel :$axes!(Int $w where { $w > 0 }, Int $h where { $h > 0 }),
+		List :$center!(Int $cx, Int $cy),
+		List :$axes!(Int $w where { $w > 0 }, Int $h where { $h > 0 }),
 		   Int :$color where { $color >= 0 } = 0,
 		  Bool :$fill = False) {
 
@@ -174,7 +174,7 @@ class GD::Image is repr('CPointer') {
 	}
 
 	method circumference(
-		Parcel :$center!(Int $cx, Int $cy),
+		List :$center!(Int $cx, Int $cy),
 		   Int :$diameter! where { $diameter > 0 },
 		   Int :$color where { $color >= 0 } = 0,
 		  Bool :$fill = False) {

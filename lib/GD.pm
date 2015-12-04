@@ -131,7 +131,7 @@ class GD::Image is repr('CPointer') {
 
 	method line(
 		List :$start (Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
-		List :$end! (Int $x2 where { $x2 > 0 }, Int $y2 where { $y2 > 0 }),
+		List :$end! (Int $x2 where { $x2 >= 0 }, Int $y2 where { $y2 >= 0 }),
 		   Int :$color where { $color >= 0 } = 0) {
 
 		gdImageLine(self, $x1, $y1, $x2, $y2, $color);

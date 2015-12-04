@@ -32,7 +32,7 @@ class GD::Image is repr('CPointer') {
 	}
 
     sub GD_new_set_of_points(Int $size) returns OpaquePointer {
-        malloc($size * 4);
+        malloc($size * 4 * 2);
     }
 
 	sub gdImageGif(GD::Image, GD::File)

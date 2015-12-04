@@ -1,7 +1,6 @@
 use NativeCall;
 
 use soft; # for now
-use Inline;
 
 enum GD_Format <GD_GIF GD_JPEG GD_PNG>;
 
@@ -22,37 +21,19 @@ class GD::File is repr('CPointer') {
 	}
 }
 
+sub malloc(int $size) is native(Str) returns OpaquePointer {*};
+
 class GD::Image is repr('CPointer') {
 
 	# This is pretty ugly so I'm looking for a more elegant solution...
-	sub GD_add_point(OpaquePointer, int32 $idx, int32 $x, int32 $y) is inline('C') {'
-		typedef struct {
-			int x;
-			int y;
-		} gdPoint, *gdPointPtr;
+	sub GD_add_point(CArray[int32] $points, int32 $idx, int32 $x, int32 $y) {
+	    $points[$idx * 2] = $x;
+	    $points[$idx * 2 + 1] = $y;
+	}
 
-		DLLEXPORT void GD_add_point(gdPointPtr points, int idx, int x, int y) {
-			points[idx].x = x;
-			points[idx].y = y;
-		}
-	'}
-
-	sub GD_new_set_of_points(int32 $size)
-		is inline('C') returns OpaquePointer {'
-		#include <stdlib.h>
-
-		typedef struct {
-			int x;
-			int y;
-		} gdPoint, *gdPointPtr;
-
-		DLLEXPORT gdPointPtr GD_new_set_of_points(int size) {
-			gdPointPtr points;
-
-			points = (gdPointPtr)malloc(size * sizeof(gdPoint));
-			return points;
-		}
-	'}
+    sub GD_new_set_of_points(Int $size) returns OpaquePointer {
+        malloc($size * 4);
+    }
 
 	sub gdImageGif(GD::Image, GD::File)
 		is native('libgd') { ... };

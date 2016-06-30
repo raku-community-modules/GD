@@ -21,7 +21,7 @@ class GD::File is repr('CPointer') {
 	}
 }
 
-sub malloc(int $size) is native(Str) returns OpaquePointer {*};
+sub malloc(int32 $size) is native(Str) returns OpaquePointer {*};
 
 class GD::Image is repr('CPointer') {
 

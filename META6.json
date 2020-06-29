@@ -1,13 +1,38 @@
 {
-        "perl" : "6.*",
-	"name" : "GD",
-	"version" : "0.0.1",
-	"description" : "Perl 6 interface to the Gd graphics library.",
-    "provides": {
-        "GD": "lib/GD.pm"
-    },
-	"author" : "Henrique Dias",
-	"depends" : [],
-	"source-type" : "git",
-	"source-url" : "git://github.com/perl6-community-modules/perl6-GD.git"
+   "perl" : "6.*",
+   "name" : "GD",
+   "version" : "0.0.2",
+   "api" : "1.0",
+   "auth": "github:raku-community-modules",
+   "description" : "Raku interface to the Gd graphics library.",
+   "provides": {
+      "GD": "lib/GD.pm"
+   },
+   "authors" : [
+      "Henrique Dias",
+      "Raku Community Modules Authors"
+   ],
+   "depends" : {
+      "runtime" : {
+         "requires" : [
+            "LibraryCheck",
+            "gd:from<native>"
+         ]
+      }
+   },
+   "source-type" : "git",
+   "source-url" : "https://github.com/perl6-community-modules/raku-GD.git",
+   "support" : {
+      "source" : "https://github.com/perl6-community-modules/raku-GD.git",
+      "bugtracker" : "https://github.com/raku-community-modules/raku-GD/issues"
+
+   },
+   "tags" : [
+      "graphics",
+      "gd",
+      "png",
+      "gif"
+   ],
+   "license": "Artistic-2.0",
+   "meta-version": "1"
 }

@@ -1,18 +1,16 @@
-use NativeCall;
+use v6;
 
-use soft; # for now
+use NativeCall;
 
 enum GD_Format <GD_GIF GD_JPEG GD_PNG>;
 
 class GD::File is repr('CPointer') {
 
-	sub fopen(Str, Str)
-		returns GD::File is native { ... }
+	sub fopen(Str, Str --> GD::File ) is native { ... }
 
-	sub fclose(GD::File $filepointer)
-		is native { ... }
+	sub fclose(GD::File $filepointer) is native { ... }
 
-	method new(Str $filename, Str $mode) {
+	method new(Str $filename, Str $mode --> GD::File ) {
 		fopen($filename, $mode);
 	}
 
@@ -20,8 +18,6 @@ class GD::File is repr('CPointer') {
 		fclose(self);
 	}
 }
-
-sub malloc(int32 $size) is native(Str) returns OpaquePointer {*};
 
 class GD::Image is repr('CPointer') {
 
@@ -31,8 +27,8 @@ class GD::Image is repr('CPointer') {
 	    $points[$idx * 2 + 1] = $y;
 	}
 
-    sub GD_new_set_of_points(Int $size) returns OpaquePointer {
-        malloc($size * 4 * 2);
+    sub GD_new_set_of_points( Int $size --> CArray[int32] ) {
+        CArray[int32].allocate($size * 2);
     }
 
 	sub gdImageGif(GD::Image, GD::File)
@@ -46,13 +42,13 @@ class GD::Image is repr('CPointer') {
 
 	sub gdImageCreate(int32, int32)
 		returns GD::Image is native('gd') { ... };
-	
+
 	sub gdImageColorAllocate(GD::Image, int32, int32, int32)
 		returns int32 is native('gd') { ... };
 
 	sub gdImageSetPixel(GD::Image, int32, int32, int32)
 		is native('gd') { ... };
-		
+
 	sub gdImageLine(GD::Image, int32, int32, int32, int32, int32)
 		is native('gd') { ... };
 
@@ -74,13 +70,13 @@ class GD::Image is repr('CPointer') {
 	sub gdImageFilledEllipse(GD::Image, int32, int32, int32, int32, int32)
 		is native('gd') { ... };
 
-	sub gdImagePolygon(GD::Image, OpaquePointer, int32, int32)
+	sub gdImagePolygon(GD::Image, CArray[int32], int32, int32)
 		is native('gd') { ... };
 
-	sub gdImageOpenPolygon(GD::Image, OpaquePointer, int32, int32)
+	sub gdImageOpenPolygon(GD::Image, CArray[int32], int32, int32)
 		is native('gd') { ... };
 
-	sub gdImageFilledPolygon(GD::Image, OpaquePointer, int32, int32)
+	sub gdImageFilledPolygon(GD::Image, CArray[int32], int32, int32)
 		is native('gd') { ... };
 
 	sub gdFree(OpaquePointer)
@@ -184,11 +180,7 @@ class GD::Image is repr('CPointer') {
 			gdImageArc(self, $cx, $cy, $diameter, $diameter, 0, 0, $color);
 	}
 
-	method polygon(
-		 Int :@points! where { @points.elems >= 6 && @points.elems % 2 == 0 },
-		 Int :$color where { $color >= 0 } = 0,
-		Bool :$fill = False,
-		Bool :$open = False) returns OpaquePointer {
+	method polygon( Int :@points! where { @points.elems >= 6 && @points.elems % 2 == 0 }, Int :$color where { $color >= 0 } = 0, Bool :$fill = False, Bool :$open = False --> CArray[int32] ) {
 
 		my $n_array = @points.elems;
 		my $gdPoints = GD_new_set_of_points(($n_array/2).Int);
@@ -208,8 +200,8 @@ class GD::Image is repr('CPointer') {
 		return $gdPoints;
 	}
 
-	method open(Str $filename, Str $mode) returns GD::File {
-		return GD::File.new($filename, $mode);
+	method open(Str() $filename, Str $mode --> GD::File ) {
+		GD::File.new($filename, $mode);
 	}
 
 	method output(GD::File $filepointer, GD_Format $format, Int $quality = -1) {
@@ -218,10 +210,6 @@ class GD::Image is repr('CPointer') {
 			gdImageJpeg(self, $filepointer, $quality) when GD_JPEG;
 			gdImagePng(self, $filepointer) when GD_PNG;
 		}
-	}
-
-	method free(OpaquePointer $storage) {
-		gdFree($storage);
 	}
 
 	method destroy() {

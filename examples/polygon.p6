@@ -1,50 +1,50 @@
-#!/usr/bin/env perl6
+#!/usr/bin/env raku
 
-use lib 'lib';
+use v6;
+
 use GD;
 
-my $image = GD::Image.new(300, 300);
-exit() unless $image;
+my $file = $*PROGRAM.parent.add("images/test_polygon.png");
 
-my $black = $image.colorAllocate("#000000");
-my $white = $image.colorAllocate("#ffffff");
-my $red = $image.colorAllocate("#ff0000");
-my $green = $image.colorAllocate("#00ff00");
-my $blue = $image.colorAllocate("#0000ff");
+if GD::Image.new(300, 300) -> $image {
 
-$image.rectangle(
-	location => (0, 0),
-	size     => (300, 300),
-	fill     => True,
-	color    => $white);
+    my $black = $image.colorAllocate("#000000");
+    my $white = $image.colorAllocate("#ffffff");
+    my $red = $image.colorAllocate("#ff0000");
+    my $green = $image.colorAllocate("#00ff00");
+    my $blue = $image.colorAllocate("#0000ff");
 
-$image.rectangle(
-	location => (10, 10),
-	size     => (100, 100),
-	color    => $red);
+    $image.rectangle(
+        location => (0, 0),
+        size     => (300, 300),
+        fill     => True,
+        color    => $green);
+
+    $image.rectangle(
+        location => (10, 10),
+        size     => (100, 100),
+        color    => $red);
 
 # triangle
 
-my Int @points = (
-10, 20,		# first point
-100, 10,	# second point
-60, 100);	# third point
+    my Int @points = (
+    10, 20,		# first point
+    100, 10,	# second point
+    60, 100);	# third point
 
-my $storage = $image.polygon(
-	points => @points,
-	open   => False,
-	fill   => False,
-	color  => $blue);
+    my $storage = $image.polygon(
+        points => @points,
+        open   => False,
+        fill   => False,
+        color  => $blue);
 
-unlink("images/test_polygon.png") if "images/test_polygon.png".IO ~~ :e;
-my $png_fh = $image.open("images/test_polygon.png", "wb");
 
-$image.output($png_fh, GD_PNG);
+    $file.unlink;
 
-$png_fh.close;
+    my $png_fh = $image.open($file, "wb");
 
-$image.free($storage);
-$image.destroy();
+    $image.output($png_fh, GD_PNG);
 
-exit();
-
+    $png_fh.close;
+    $image.destroy();
+}

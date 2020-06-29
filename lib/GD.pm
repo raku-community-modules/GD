@@ -1,230 +1,279 @@
-use NativeCall;
+use v6;
 
-use soft; # for now
+use NativeCall :TEST, :DEFAULT;
+use NativeHelpers::Array;
+use LibraryCheck;
 
 enum GD_Format <GD_GIF GD_JPEG GD_PNG>;
 
-class GD::File is repr('CPointer') {
+module GD {
 
-	sub fopen(Str, Str)
-		returns GD::File is native { ... }
+    my Str $lib;
 
-	sub fclose(GD::File $filepointer)
-		is native { ... }
+    sub find-lib-version() {
+        $lib //= do {
+            my Str $name = 'gd';
+            my Int $lower = 2;
+            my Int $upper = 6;
 
-	method new(Str $filename, Str $mode) {
-		fopen($filename, $mode);
-	}
+            my $lib;
 
-	method close() {
-		fclose(self);
-	}
-}
+            for $lower .. $upper -> $version-number {
+                my $version = Version.new($version-number);
 
-sub malloc(int32 $size) is native(Str) returns OpaquePointer {*};
-
-class GD::Image is repr('CPointer') {
-
-	# This is pretty ugly so I'm looking for a more elegant solution...
-	sub GD_add_point(CArray[int32] $points, int32 $idx, int32 $x, int32 $y) {
-	    $points[$idx * 2] = $x;
-	    $points[$idx * 2 + 1] = $y;
-	}
-
-    sub GD_new_set_of_points(Int $size) returns OpaquePointer {
-        malloc($size * 4 * 2);
+                if library-exists($name, $version) {
+                    $lib =  guess_library_name($name, $version) ;
+                    last;
+                }
+            }
+            $lib;
+        }
     }
 
-	sub gdImageGif(GD::Image, GD::File)
-		is native('gd') { ... };
+    constant LIB =  &find-lib-version;
 
-	sub gdImageJpeg(GD::Image, GD::File, int32)
-		is native('gd') { ... };
 
-	sub gdImagePng(GD::Image, GD::File)
-		is native('gd') { ... };
+    my $errno := cglobal(Str, 'errno', int32);
 
-	sub gdImageCreate(int32, int32)
-		returns GD::Image is native('gd') { ... };
-	
-	sub gdImageColorAllocate(GD::Image, int32, int32, int32)
-		returns int32 is native('gd') { ... };
+    class File is repr('CPointer') {
 
-	sub gdImageSetPixel(GD::Image, int32, int32, int32)
-		is native('gd') { ... };
-		
-	sub gdImageLine(GD::Image, int32, int32, int32, int32, int32)
-		is native('gd') { ... };
+        class X::GD::File is Exception {
+            has Int $.errno     is required;
+            has Str $.filename  is required;
 
-	sub gdImageFilledRectangle(GD::Image, int32, int32, int32, int32, int32)
-		is native('gd') { ... };
+            has Str $!message;
 
-	sub gdImageRectangle(GD::Image, int32, int32, int32, int32, int32)
-		is native('gd') { ... };
+            method message( --> Str) {
+                $!message //= self!strerror ~ " while opening { $!filename } ({ $!errno })";
+            }
 
-	sub gdImageFilledArc(GD::Image, int32, int32, int32, int32, int32, int32, int32, int32)
-		is native('gd') { ... };
+            method Str( --> Str ) {
+                self.message;
+            }
 
-	sub gdImageArc(GD::Image, int32, int32, int32, int32, int32, int32, int32)
-		is native('gd') { ... };
+            sub strerror_r(int32, CArray[uint8] $buf is raw, size_t $buflen --> CArray[uint8]) is native { * }
 
-	sub gdImageEllipse(GD::Image, int32, int32, int32, int32, int32)
-		is native('gd') { ... };
+            method !strerror(--> Str) {
+                my $array = CArray[uint8].allocate(256);
+                my $out = strerror_r($!errno, $array, $array.elems);
 
-	sub gdImageFilledEllipse(GD::Image, int32, int32, int32, int32, int32)
-		is native('gd') { ... };
+                my $buff = copy-carray-to-buf($out, $array.elems);
+                my $i = 0;
+                for $buff.list -> $byte {
+                    last if !$byte;
+                    $i++;
+                }
 
-	sub gdImagePolygon(GD::Image, OpaquePointer, int32, int32)
-		is native('gd') { ... };
+                $buff.subbuf(0, $i).decode;
+            }
+        }
 
-	sub gdImageOpenPolygon(GD::Image, OpaquePointer, int32, int32)
-		is native('gd') { ... };
 
-	sub gdImageFilledPolygon(GD::Image, OpaquePointer, int32, int32)
-		is native('gd') { ... };
+        sub fopen(Str, Str --> GD::File ) is native { ... }
 
-	sub gdFree(OpaquePointer)
-		is native('gd') { ... };
+        sub fclose(GD::File $filepointer) is native { ... }
 
-	sub gdImageDestroy(GD::Image)
-		is native('gd') { ... };
+        method new(Str() $filename, Str $mode --> GD::File ) {
+            if fopen($filename, $mode) -> $fh {
+                $fh
+            }
+            else {
+                die X::GD::File.new(:$errno, :$filename);
+            }
+        }
 
-	### METHODS ###
+        method close() {
+            fclose(self) if self;
+        }
+    }
 
-	method new(Int $width, Int $height) {
-		gdImageCreate($width, $height);
-	}
+    class Image is repr('CPointer') {
 
-	multi method colorAllocate(
-			Int :$red! where 0..255,
-			Int :$green! where 0..255,
-			Int :$blue! where 0..255) returns Int {
+        # This is pretty ugly so I'm looking for a more elegant solution...
+        sub GD_add_point(CArray[int32] $points, int32 $idx, int32 $x, int32 $y) {
+            $points[$idx * 2] = $x;
+            $points[$idx * 2 + 1] = $y;
+        }
 
-		return gdImageColorAllocate(self, $red, $green, $blue);
-	}
+        sub GD_new_set_of_points( Int $size --> CArray[int32] ) {
+            CArray[int32].allocate($size * 2);
+        }
 
-	multi method colorAllocate(Str $hexstr where /^ '#' <[A..Fa..f\d]>**6 $/) returns Int {
+        sub gdImageGif(GD::Image, GD::File) is native(LIB) { ... };
 
-		my $red = ("0x" ~ $hexstr.substr(1,2)).Int;
-		my $green = ("0x" ~ $hexstr.substr(3,2)).Int;
-		my $blue = ("0x" ~ $hexstr.substr(5,2)).Int;
+        sub gdImageJpeg(GD::Image, GD::File, int32) is native(LIB) { ... };
 
-		return gdImageColorAllocate(self, $red, $green, $blue);
-	}
+        sub gdImagePng(GD::Image, GD::File) is native(LIB) { ... };
 
-	multi method colorAllocate(Int $hex_value where { $hex_value >= 0 }) returns Int {
+        sub gdImageCreate(int32, int32 --> GD::Image ) is native(LIB) { ... };
 
-		my $red = (($hex_value +> 16) +& 0xFF).Int;
-		my $green = (($hex_value +> 8) +& 0xFF).Int;
-		my $blue = (($hex_value) +& 0xFF).Int;
+        sub gdImageColorAllocate(GD::Image, int32, int32, int32 --> int32 ) is native(LIB) { ... };
 
-		return gdImageColorAllocate(self, $red, $green, $blue);
-	}
+        sub gdImageSetPixel(GD::Image, int32, int32, int32)
+            is native(LIB) { ... };
 
-	method pixel(
-		Int $x where { $x >= 0 },
-		Int $y where { $y >= 0 },
-		Int $color where { $color >= 0 } = 0) {
+        sub gdImageLine(GD::Image, int32, int32, int32, int32, int32)
+            is native(LIB) { ... };
 
-		gdImageSetPixel(self, $x, $y, $color);
-	}
+        sub gdImageFilledRectangle(GD::Image, int32, int32, int32, int32, int32)
+            is native(LIB) { ... };
 
-	method line(
-		List :$start (Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
-		List :$end! (Int $x2 where { $x2 >= 0 }, Int $y2 where { $y2 >= 0 }),
-		   Int :$color where { $color >= 0 } = 0) {
+        sub gdImageRectangle(GD::Image, int32, int32, int32, int32, int32)
+            is native(LIB) { ... };
 
-		gdImageLine(self, $x1, $y1, $x2, $y2, $color);
-	}
+        sub gdImageFilledArc(GD::Image, int32, int32, int32, int32, int32, int32, int32, int32)
+            is native(LIB) { ... };
 
-	method rectangle(
-		List :$location (Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
-		List :$size! (Int $x2 where { $x2 > 0 }, Int $y2 where { $y2 > 0 }),
-		   Int :$color where { $color >= 0 } = 0,
-		  Bool :$fill = False) {
+        sub gdImageArc(GD::Image, int32, int32, int32, int32, int32, int32, int32)
+            is native(LIB) { ... };
 
-		$fill ??
-			gdImageFilledRectangle(self, $x1, $y1, $x2, $y2, $color) !!
-			gdImageRectangle(self, $x1, $y1, $x2, $y2, $color);
-	}
+        sub gdImageEllipse(GD::Image, int32, int32, int32, int32, int32)
+            is native(LIB) { ... };
 
-	# style to enum
-	method arc(
-		List :$center!(Int $cx, Int $cy),
-		List :$amplitude!(Int $w where { $w > 0 }, Int $h where { $h > 0 }),
-		List :$aperture!(Int $s, Int $e),
-		   Int :$color where { $color >= 0 } = 0,
-		  Bool :$fill = False,
-		   Int :$style = 0) {
+        sub gdImageFilledEllipse(GD::Image, int32, int32, int32, int32, int32)
+            is native(LIB) { ... };
 
-		$fill ??
-			gdImageFilledArc(self, $cx, $cy, $w, $h, $s, $e, $color, $style) !!
-			gdImageArc(self, $cx, $cy, $w, $h, $s, $e, $color);
-	}
+        sub gdImagePolygon(GD::Image, CArray[int32], int32, int32)
+            is native(LIB) { ... };
 
-	method ellipse(
-		List :$center!(Int $cx, Int $cy),
-		List :$axes!(Int $w where { $w > 0 }, Int $h where { $h > 0 }),
-		   Int :$color where { $color >= 0 } = 0,
-		  Bool :$fill = False) {
+        sub gdImageOpenPolygon(GD::Image, CArray[int32], int32, int32)
+            is native(LIB) { ... };
 
-		$fill ??
-			gdImageFilledEllipse(self, $cx, $cy, $w, $h, $color) !!
-			gdImageArc(self, $cx, $cy, $w, $h, 0, 0, $color);
-	}
+        sub gdImageFilledPolygon(GD::Image, CArray[int32], int32, int32)
+            is native(LIB) { ... };
 
-	method circumference(
-		List :$center!(Int $cx, Int $cy),
-		   Int :$diameter! where { $diameter > 0 },
-		   Int :$color where { $color >= 0 } = 0,
-		  Bool :$fill = False) {
+        sub gdFree(OpaquePointer)
+            is native(LIB) { ... };
 
-		$fill ??
-			gdImageFilledEllipse(self, $cx, $cy, $diameter, $diameter, $color) !!
-			gdImageArc(self, $cx, $cy, $diameter, $diameter, 0, 0, $color);
-	}
+        sub gdImageDestroy(GD::Image)
+            is native(LIB) { ... };
 
-	method polygon(
-		 Int :@points! where { @points.elems >= 6 && @points.elems % 2 == 0 },
-		 Int :$color where { $color >= 0 } = 0,
-		Bool :$fill = False,
-		Bool :$open = False) returns OpaquePointer {
+        ### METHODS ###
 
-		my $n_array = @points.elems;
-		my $gdPoints = GD_new_set_of_points(($n_array/2).Int);
+        method new(Int $width, Int $height) {
+            gdImageCreate($width, $height);
+        }
 
-		my $n = 0;
-		for @points -> $x, $y {
-			GD_add_point($gdPoints, $n, $x, $y);
-			$n++;
-		}
+        multi method colorAllocate( Int :$red! where 0..255, Int :$green! where 0..255, Int :$blue! where 0..255) returns Int {
 
-		$fill ??
-			gdImageFilledPolygon(self, $gdPoints, $n, $color) !!
-			$open ??
-				gdImageOpenPolygon(self, $gdPoints, $n, $color) !!
-				gdImagePolygon(self, $gdPoints, $n, $color);
+            gdImageColorAllocate(self, $red, $green, $blue);
+        }
 
-		return $gdPoints;
-	}
+        multi method colorAllocate(Str $hexstr where /^ '#' <[A..Fa..f\d]>**6 $/) returns Int {
 
-	method open(Str $filename, Str $mode) returns GD::File {
-		return GD::File.new($filename, $mode);
-	}
+            my $red = ("0x" ~ $hexstr.substr(1,2)).Int;
+            my $green = ("0x" ~ $hexstr.substr(3,2)).Int;
+            my $blue = ("0x" ~ $hexstr.substr(5,2)).Int;
 
-	method output(GD::File $filepointer, GD_Format $format, Int $quality = -1) {
-		given $format {
-			gdImageGif(self, $filepointer) when GD_GIF;
-			gdImageJpeg(self, $filepointer, $quality) when GD_JPEG;
-			gdImagePng(self, $filepointer) when GD_PNG;
-		}
-	}
+            gdImageColorAllocate(self, $red, $green, $blue);
+        }
 
-	method free(OpaquePointer $storage) {
-		gdFree($storage);
-	}
+        multi method colorAllocate(Int $hex_value where { $hex_value >= 0 }) returns Int {
 
-	method destroy() {
-		gdImageDestroy(self);
-	}
+            my $red = (($hex_value +> 16) +& 0xFF).Int;
+            my $green = (($hex_value +> 8) +& 0xFF).Int;
+            my $blue = (($hex_value) +& 0xFF).Int;
+
+            return gdImageColorAllocate(self, $red, $green, $blue);
+        }
+
+        method pixel(
+            Int $x where { $x >= 0 },
+            Int $y where { $y >= 0 },
+            Int $color where { $color >= 0 } = 0) {
+
+            gdImageSetPixel(self, $x, $y, $color);
+        }
+
+        method line(
+            List :$start (Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
+            List :$end! (Int $x2 where { $x2 >= 0 }, Int $y2 where { $y2 >= 0 }),
+               Int :$color where { $color >= 0 } = 0) {
+
+            gdImageLine(self, $x1, $y1, $x2, $y2, $color);
+        }
+
+        method rectangle(
+            List :$location (Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
+            List :$size! (Int $x2 where { $x2 > 0 }, Int $y2 where { $y2 > 0 }),
+               Int :$color where { $color >= 0 } = 0,
+              Bool :$fill = False) {
+
+            $fill ??
+                gdImageFilledRectangle(self, $x1, $y1, $x2, $y2, $color) !!
+                gdImageRectangle(self, $x1, $y1, $x2, $y2, $color);
+        }
+
+        # style to enum
+        method arc(
+            List :$center!(Int $cx, Int $cy),
+            List :$amplitude!(Int $w where { $w > 0 }, Int $h where { $h > 0 }),
+            List :$aperture!(Int $s, Int $e),
+               Int :$color where { $color >= 0 } = 0,
+              Bool :$fill = False,
+               Int :$style = 0) {
+
+            $fill ??
+                gdImageFilledArc(self, $cx, $cy, $w, $h, $s, $e, $color, $style) !!
+                gdImageArc(self, $cx, $cy, $w, $h, $s, $e, $color);
+        }
+
+        method ellipse(
+            List :$center!(Int $cx, Int $cy),
+            List :$axes!(Int $w where { $w > 0 }, Int $h where { $h > 0 }),
+               Int :$color where { $color >= 0 } = 0,
+              Bool :$fill = False) {
+
+            $fill ??
+                gdImageFilledEllipse(self, $cx, $cy, $w, $h, $color) !!
+                gdImageArc(self, $cx, $cy, $w, $h, 0, 0, $color);
+        }
+
+        method circumference(
+            List :$center!(Int $cx, Int $cy),
+               Int :$diameter! where { $diameter > 0 },
+               Int :$color where { $color >= 0 } = 0,
+              Bool :$fill = False) {
+
+            $fill ??
+                gdImageFilledEllipse(self, $cx, $cy, $diameter, $diameter, $color) !!
+                gdImageArc(self, $cx, $cy, $diameter, $diameter, 0, 0, $color);
+        }
+
+        method polygon( Int :@points! where { @points.elems >= 6 && @points.elems % 2 == 0 }, Int :$color where { $color >= 0 } = 0, Bool :$fill = False, Bool :$open = False --> CArray[int32] ) {
+
+            my $n_array = @points.elems;
+            my $gdPoints = GD_new_set_of_points(($n_array/2).Int);
+
+            my $n = 0;
+            for @points -> $x, $y {
+                GD_add_point($gdPoints, $n, $x, $y);
+                $n++;
+            }
+
+            $fill ??
+                gdImageFilledPolygon(self, $gdPoints, $n, $color) !!
+                $open ??
+                    gdImageOpenPolygon(self, $gdPoints, $n, $color) !!
+                    gdImagePolygon(self, $gdPoints, $n, $color);
+
+            return $gdPoints;
+        }
+
+        method open(Str() $filename, Str $mode --> GD::File ) {
+            GD::File.new($filename, $mode);
+        }
+
+        method output(GD::File $filepointer, GD_Format $format, Int $quality = -1) {
+            given $format {
+                gdImageGif(self, $filepointer) when GD_GIF;
+                gdImageJpeg(self, $filepointer, $quality) when GD_JPEG;
+                gdImagePng(self, $filepointer) when GD_PNG;
+            }
+        }
+
+        method destroy() {
+            gdImageDestroy(self);
+        }
+    }
 }

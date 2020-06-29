@@ -1,0 +1,8 @@
+v0.0.2 Mon 29 Jun 17:17:47 BST 2020
+	* Remove native malloc() and free()
+    * Throw an exception if file can't be opened
+    * Do not require the gd-devel package
+    * Fix type constraint errors in polygon
+    * Rename → Raku
+v0.0.1	Tue Apr 25 10:24:18 2017
+	* Initial Release

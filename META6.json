@@ -16,7 +16,6 @@
       "LibraryCheck",
       "NativeHelpers::Array"
    ],
-   "source-type" : "git",
    "source-url" : "https://github.com/perl6-community-modules/raku-GD.git",
    "support" : {
       "source" : "https://github.com/perl6-community-modules/raku-GD.git",

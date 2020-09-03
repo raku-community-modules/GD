@@ -1,5 +1,6 @@
 {
    "perl" : "6.*",
+   "raku" : "6.*",
    "name" : "GD",
    "version" : "0.0.2",
    "api" : "1.0",
@@ -16,9 +17,9 @@
       "LibraryCheck",
       "NativeHelpers::Array"
    ],
-   "source-url" : "https://github.com/perl6-community-modules/raku-GD.git",
+   "source-url" : "https://github.com/raku-community-modules/raku-GD.git",
    "support" : {
-      "source" : "https://github.com/perl6-community-modules/raku-GD.git",
+      "source" : "https://github.com/raku-community-modules/raku-GD.git",
       "bugtracker" : "https://github.com/raku-community-modules/raku-GD/issues"
 
    },

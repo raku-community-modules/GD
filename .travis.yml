@@ -4,8 +4,11 @@ language: perl6
 
 perl6:
     - latest
-
+    - '2018.10'
 install:
     - sudo apt-get install libgd2-xpm-dev
-    - rakudobrew build-panda
+    - rakudobrew build zef
     - panda installdeps .
+script:
+    - prove -ve "perl6 -I."
+    - zef install .

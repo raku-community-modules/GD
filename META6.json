@@ -17,10 +17,10 @@
       "LibraryCheck",
       "NativeHelpers::Array"
    ],
-   "source-url" : "https://github.com/raku-community-modules/raku-GD.git",
+   "source-url" : "https://github.com/raku-community-modules/GD.git",
    "support" : {
-      "source" : "https://github.com/raku-community-modules/raku-GD.git",
-      "bugtracker" : "https://github.com/raku-community-modules/raku-GD/issues"
+      "source" : "https://github.com/raku-community-modules/GD.git",
+      "bugtracker" : "https://github.com/raku-community-modules/GD/issues"
 
    },
    "tags" : [

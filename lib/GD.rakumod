@@ -106,9 +106,41 @@ module GD:ver<0.0.3>:api<1.0> {
 
         sub gdImagePng(GD::Image, GD::File) is native(LIB) { ... };
 
+        sub gdImageBmpPtr(GD::Image $image, int32 $size is rw, int32 $compression)
+            returns OpaquePointer
+            is native(LIB) is export { ... }
+
+        sub gdImageGdPtr(GD::Image $image, int32 $size is rw)
+            returns OpaquePointer
+            is native(LIB) is export { ... }
+
+        sub gdImageGifPtr(GD::Image $image, int32 $size is rw)
+            returns OpaquePointer
+            is native(LIB) is export { ... }
+
+        sub gdImageJpegPtr(GD::Image $image, int32 $size is rw, int32 $quality)
+            returns OpaquePointer
+            is native(LIB) is export { ... }
+
         sub gdImagePngPtr(GD::Image, int32 $size is rw)
             returns OpaquePointer
             is native(LIB) { ... };
+
+        sub gdImagePngPtrEx(GD::Image $image, int32 $size is rw, int32 $compression)
+            returns OpaquePointer
+            is native(LIB) is export { ... }
+
+        sub gdImageTiffPtr(GD::Image $image, int32 $size is rw)
+            returns OpaquePointer
+            is native(LIB) is export { ... }
+
+        sub gdImageWebpPtr(GD::Image $image, int32 $size is rw)
+            returns OpaquePointer
+            is native(LIB) is export { ... }
+
+        sub gdImageWebpPtrEx(GD::Image $image, int32 $size is rw, int32 $quality)
+            returns OpaquePointer
+            is native(LIB) is export { ... }
 
         sub gdImageCreate(int32, int32 --> GD::Image ) is native(LIB) { ... };
 
@@ -277,9 +309,69 @@ module GD:ver<0.0.3>:api<1.0> {
             }
         }
 
-        method png() {
+        method bmp($compression = 0) {
             my int32 $size;
-            my $ptr  = gdImagePngPtr(self, $size);
+            my $ptr  = gdImageBmpPtr(self, $size, $compression);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        method gd() {
+            my int32 $size;
+            my $ptr  = gdImageGdPtr(self, $size);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        method gif() {
+            my int32 $size;
+            my $ptr  = gdImageGifPtr(self, $size);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        method jpeg($quality = -1) {
+            my int32 $size;
+            my $ptr  = gdImageJpegPtr(self, $size, $quality);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        method png($level?) {
+            my int32 $size;
+            my $ptr;
+            if $level.defined {
+              $ptr = gdImagePngPtrEx(self, $size, $level);
+            }
+            else {
+              $ptr = gdImagePngPtr(self, $size);
+            }
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        method tiff() {
+            my int32 $size;
+            my $ptr  = gdImageTiffPtr(self, $size);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        method webp($quality?) {
+            my int32 $size;
+            my $ptr;
+            if $quality.defined {
+              $ptr = gdImageWebpPtrEx(self, $size, $quality);
+            }
+            else {
+              $ptr = gdImageWebpPtr(self, $size);
+            }
             my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
             gdFree($ptr);
             return $blob;

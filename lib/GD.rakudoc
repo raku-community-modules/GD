@@ -79,9 +79,23 @@ The Raku API
 
 =head3 C<open>
 
-=head3 C<outout>
+=head3 C<output>
+
+=head2 Blob Generation Methods
+
+=head3 C<bmp>
+
+=head3 C<gd>
+
+=head3 C<gif>
+
+=head3 C<jpeg>
 
 =head3 C<png>
+
+=head3 C<tiff>
+
+=head3 C<webp>
 
 =head2 Memory Management
 

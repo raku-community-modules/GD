@@ -7,7 +7,7 @@
    "auth": "github:raku-community-modules",
    "description" : "Raku interface to the Gd graphics library.",
    "provides": {
-      "GD": "lib/GD.pm"
+      "GD": "lib/GD.rakumod"
    },
    "authors" : [
       "Henrique Dias",

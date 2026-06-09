@@ -2,7 +2,7 @@
    "perl" : "6.*",
    "raku" : "6.*",
    "name" : "GD",
-   "version" : "0.0.2",
+   "version" : "0.0.3",
    "api" : "1.0",
    "auth": "github:raku-community-modules",
    "description" : "Raku interface to the Gd graphics library.",

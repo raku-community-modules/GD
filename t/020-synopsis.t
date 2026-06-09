@@ -21,9 +21,9 @@ lives-ok {
          green => 255,
          blue  => 255);
 
-      my $red = $image.colorAllocate("#ff0000");
+      my $red   = $image.colorAllocate("#ff0000");
       my $green = $image.colorAllocate("#00ff00");
-      my $blue = $image.colorAllocate(0x0000ff);
+      my $blue  = $image.colorAllocate(0x0000ff);
 
       $image.rectangle(
          location => (10, 10),

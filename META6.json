@@ -15,7 +15,8 @@
    ],
    "depends" : [
       "LibraryCheck",
-      "NativeHelpers::Array"
+      "NativeHelpers::Array",
+      "NativeHelpers::Blob"
    ],
    "source-url" : "https://github.com/raku-community-modules/GD.git",
    "support" : {

@@ -2,6 +2,7 @@ use v6;
 
 use NativeCall :TEST, :DEFAULT;
 use NativeHelpers::Array;
+use NativeHelpers::Blob;
 use LibraryCheck;
 
 enum GD_Format <GD_GIF GD_JPEG GD_PNG>;
@@ -104,6 +105,10 @@ module GD:ver<0.0.3>:api<1.0> {
         sub gdImageJpeg(GD::Image, GD::File, int32) is native(LIB) { ... };
 
         sub gdImagePng(GD::Image, GD::File) is native(LIB) { ... };
+
+        sub gdImagePngPtr(GD::Image, int32 $size is rw)
+            returns OpaquePointer
+            is native(LIB) { ... };
 
         sub gdImageCreate(int32, int32 --> GD::Image ) is native(LIB) { ... };
 
@@ -270,6 +275,14 @@ module GD:ver<0.0.3>:api<1.0> {
                 gdImageJpeg(self, $filepointer, $quality) when GD_JPEG;
                 gdImagePng(self, $filepointer) when GD_PNG;
             }
+        }
+
+        method png() {
+            my int32 $size;
+            my $ptr  = gdImagePngPtr(self, $size);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
         }
 
         method destroy() {

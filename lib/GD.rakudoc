@@ -75,6 +75,18 @@ The Raku API
 
 =head3 C<polygon>
 
+=head2 Output Methods
+
+=head3 C<open>
+
+=head3 C<outout>
+
+=head3 C<png>
+
+=head2 Memory Management
+
+=head3 C<destroy>
+
 =head1 AUTHOR
 
 Henrique Dias - L<mrhdias@mail.com>
@@ -96,4 +108,4 @@ C examples from GD source repository L<https://bitbucket.org/pierrejoye/gd-libgd
 =head1 LICENSE
 
 This library is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+under the Artistic License 2.0.

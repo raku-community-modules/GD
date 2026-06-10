@@ -1,6 +1,8 @@
 v0.0.3 xxx
     * Use the new file extensions such as .rakumod
     * Method loading the PNG graphic data into a blob variable, without using a file
+    * Fix issue #14 from Github "erratic behaviour of rectangle method"
+    * allow drawing with various thicknesses
 
 v0.0.2 Mon 29 Jun 17:17:47 BST 2020
     * Remove native malloc() and free()

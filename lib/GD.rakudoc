@@ -63,6 +63,8 @@ The Raku API
 
 =head3 C<pixel>
 
+=head3 C<setThickness>
+
 =head3 C<line>
 
 =head3 C<rectangle>

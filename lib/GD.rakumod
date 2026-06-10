@@ -149,6 +149,10 @@ module GD:ver<0.0.3>:api<1.0> {
         sub gdImageSetPixel(GD::Image, int32, int32, int32)
             is native(LIB) { ... };
 
+	sub gdImageSetThickness(GD::Image $im, int32 $thickness)
+	    #returns void
+	    is native(LIB) {*}
+
         sub gdImageLine(GD::Image, int32, int32, int32, int32, int32)
             is native(LIB) { ... };
 
@@ -222,6 +226,10 @@ module GD:ver<0.0.3>:api<1.0> {
             gdImageSetPixel(self, $x, $y, $color);
         }
 
+        method setThickness( Int $thickness where { $thickness > 0 } ) {
+            gdImageSetThickness(self, $thickness);
+        }
+
         method line(
             List :$start (Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
             List :$end! (Int $x2 where { $x2 >= 0 }, Int $y2 where { $y2 >= 0 }),
@@ -232,13 +240,13 @@ module GD:ver<0.0.3>:api<1.0> {
 
         method rectangle(
             List :$location (Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
-            List :$size! (Int $x2 where { $x2 > 0 }, Int $y2 where { $y2 > 0 }),
-               Int :$color where { $color >= 0 } = 0,
-              Bool :$fill = False) {
+            List :$size! (Int $dx, Int $dy ),
+             Int :$color where { $color >= 0 } = 0,
+            Bool :$fill = False) {
 
             $fill ??
-                gdImageFilledRectangle(self, $x1, $y1, $x2, $y2, $color) !!
-                gdImageRectangle(self, $x1, $y1, $x2, $y2, $color);
+                   gdImageFilledRectangle(self, $x1, $y1, $x1 + $dx, $y1 + $dy, $color)
+                !! gdImageRectangle(      self, $x1, $y1, $x1 + $dx, $y1 + $dy, $color);
         }
 
         # style to enum

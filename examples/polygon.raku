@@ -28,9 +28,9 @@ if GD::Image.new(300, 300) -> $image {
 # triangle
 
     my Int @points = (
-    10, 20,		# first point
-    100, 10,	# second point
-    60, 100);	# third point
+         10,  20,       # first point
+        100,  10,       # second point
+         60, 100);      # third point
 
     my $storage = $image.polygon(
         points => @points,

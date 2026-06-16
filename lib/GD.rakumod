@@ -108,19 +108,19 @@ module GD:ver<0.0.3>:api<1.0> {
 
         sub gdImageBmpPtr(GD::Image $image, int32 $size is rw, int32 $compression)
             returns OpaquePointer
-            is native(LIB) is export { ... }
+            is native(LIB) { ... }
 
         sub gdImageGdPtr(GD::Image $image, int32 $size is rw)
             returns OpaquePointer
-            is native(LIB) is export { ... }
+            is native(LIB) { ... }
 
         sub gdImageGifPtr(GD::Image $image, int32 $size is rw)
             returns OpaquePointer
-            is native(LIB) is export { ... }
+            is native(LIB) { ... }
 
         sub gdImageJpegPtr(GD::Image $image, int32 $size is rw, int32 $quality)
             returns OpaquePointer
-            is native(LIB) is export { ... }
+            is native(LIB) { ... }
 
         sub gdImagePngPtr(GD::Image, int32 $size is rw)
             returns OpaquePointer
@@ -128,19 +128,19 @@ module GD:ver<0.0.3>:api<1.0> {
 
         sub gdImagePngPtrEx(GD::Image $image, int32 $size is rw, int32 $compression)
             returns OpaquePointer
-            is native(LIB) is export { ... }
+            is native(LIB) { ... }
 
         sub gdImageTiffPtr(GD::Image $image, int32 $size is rw)
             returns OpaquePointer
-            is native(LIB) is export { ... }
+            is native(LIB) { ... }
 
         sub gdImageWebpPtr(GD::Image $image, int32 $size is rw)
             returns OpaquePointer
-            is native(LIB) is export { ... }
+            is native(LIB) { ... }
 
         sub gdImageWebpPtrEx(GD::Image $image, int32 $size is rw, int32 $quality)
             returns OpaquePointer
-            is native(LIB) is export { ... }
+            is native(LIB) { ... }
 
         sub gdImageCreate(int32, int32 --> GD::Image ) is native(LIB) { ... };
 

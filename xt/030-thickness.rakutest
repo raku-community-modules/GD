@@ -28,15 +28,15 @@ $im.setThickness(1);
 $im.line(start => (0, 110), end => (190, 130), color => $black);
 $im.ellipse(  center   => ( 10, 120), axes => (20, 20), fill => True , color => $white);
 $im.ellipse(  center   => ( 10, 120), axes => (20, 20), fill => False, color => $blue);
-$im.rectangle(location => ( 30, 110), size => (20, 20), fill => True , color => $white);
-$im.rectangle(location => ( 30, 110), size => (20, 20), fill => False, color => $blue);
+$im.rectangle(location => ( 30, 110), size => (21, 21), fill => True , color => $white);
+$im.rectangle(location => ( 30, 110), size => (21, 21), fill => False, color => $blue);
 $im.ellipse(  center   => ( 70, 120), axes => (20, 20), fill => True , color => $red);
-$im.rectangle(location => ( 90, 110), size => (20, 20), fill => True , color => $red);
+$im.rectangle(location => ( 90, 110), size => (21, 21), fill => True , color => $red);
 $im.setThickness(3);
 $im.ellipse(  center   => (130, 120), axes => (20, 20), fill => True , color => $white);
 $im.ellipse(  center   => (130, 120), axes => (20, 20), fill => False, color => $blue);
-$im.rectangle(location => (150, 110), size => (20, 20), fill => True , color => $white);
-$im.rectangle(location => (150, 110), size => (20, 20), fill => False, color => $blue);
+$im.rectangle(location => (150, 110), size => (21, 21), fill => True , color => $white);
+$im.rectangle(location => (150, 110), size => (21, 21), fill => False, color => $blue);
 
 my $png =  MIME::Base64.encode($im.png);
 my $test = qq :to/EOF/;
@@ -51,6 +51,8 @@ my $test = qq :to/EOF/;
 </html>
 EOF
 
+$im.destroy;
+
 my $ref = $*PROGRAM.sibling("data/030-thickness.html").IO.slurp;
 ok $test eq $ref;
 
@@ -60,11 +62,11 @@ done-testing;
 
 =head1 NAME
 
-030-thickness.raku - draw lines, rectangles and ellipses with various thicknesses
+030-thickness.rakutest - draw lines, rectangles and ellipses with various thicknesses
 
 =head1 SYNOPSIS
 
-  raku -I. xt/030-thickness.raku
+  raku -I. xt/030-thickness.rakutest
 
 =head1 DESCRIPTION
 

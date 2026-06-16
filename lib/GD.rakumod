@@ -375,15 +375,17 @@ module GD:ver<0.0.3>:api<1.0> {
             return $blob;
         }
 
-        method png($level?) {
+        multi method png() {
             my int32 $size;
-            my $ptr;
-            if $level.defined {
-              $ptr = gdImagePngPtrEx(self, $size, $level);
-            }
-            else {
-              $ptr = gdImagePngPtr(self, $size);
-            }
+            my $ptr  = gdImagePngPtr(self, $size);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        multi method png($level) {
+            my int32 $size;
+            my $ptr  = gdImagePngPtrEx(self, $size, $level);
             my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
             gdFree($ptr);
             return $blob;
@@ -397,15 +399,17 @@ module GD:ver<0.0.3>:api<1.0> {
             return $blob;
         }
 
-        method webp($quality?) {
+        multi method webp() {
             my int32 $size;
-            my $ptr;
-            if $quality.defined {
-              $ptr = gdImageWebpPtrEx(self, $size, $quality);
-            }
-            else {
-              $ptr = gdImageWebpPtr(self, $size);
-            }
+            my $ptr  = gdImageWebpPtr(self, $size);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        multi method webp($quality) {
+            my int32 $size;
+            my $ptr  = gdImageWebpPtrEx(self, $size, $quality);
             my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
             gdFree($ptr);
             return $blob;

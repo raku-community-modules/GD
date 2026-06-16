@@ -51,6 +51,6 @@ my $test = qq :to/EOF/;
 </body>
 </html>
 EOF
-$im.destroy;
+
 my $ref = $*PROGRAM.sibling("data/020-blobs.html").IO.slurp;
 ok $test eq $ref;

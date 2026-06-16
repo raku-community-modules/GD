@@ -149,9 +149,9 @@ module GD:ver<0.0.3>:api<1.0> {
         sub gdImageSetPixel(GD::Image, int32, int32, int32)
             is native(LIB) { ... };
 
-	sub gdImageSetThickness(GD::Image $im, int32 $thickness)
-	    #returns void
-	    is native(LIB) {*}
+        sub gdImageSetThickness(GD::Image $im, int32 $thickness)
+            #returns void
+            is native(LIB) {*}
 
         sub gdImageLine(GD::Image, int32, int32, int32, int32, int32)
             is native(LIB) { ... };
@@ -238,15 +238,41 @@ module GD:ver<0.0.3>:api<1.0> {
             gdImageLine(self, $x1, $y1, $x2, $y2, $color);
         }
 
-        method rectangle(
-            List :$location (Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
+        multi method rectangle(
+            List :$location (Int $x1 where { $x1 ≥ 0 }, Int $y1 where { $y1 ≥ 0 }) = (0, 0),
             List :$size! (Int $dx, Int $dy ),
-             Int :$color where { $color >= 0 } = 0,
+             Int :$color where { $color ≥ 0 } = 0,
+            Bool :$fill = False) {
+            my Int $x2 = $x1 + $dx - 1;
+            my Int $y2 = $y1 + $dy - 1;
+            $x2 = $x1 + 1 + $dx if $dx < 0;
+            $y2 = $y1 + 1 + $dy if $dy < 0;
+
+            $fill ??
+                   gdImageFilledRectangle(self, $x1, $y1, $x2, $y2, $color)
+                !! gdImageRectangle(      self, $x1, $y1, $x2, $y2, $color);
+        }
+
+        multi method rectangle(
+            List :$location      (Int $x1 where { $x1 ≥ 0 }, Int $y1 where { $y1 ≥ 0 }) = (0, 0),
+            List :$alt-location! (Int $x2 where { $x2 ≥ 0 }, Int $y2 where { $y2 ≥ 0 }),
+             Int :$color where { $color ≥ 0 } = 0,
             Bool :$fill = False) {
 
             $fill ??
-                   gdImageFilledRectangle(self, $x1, $y1, $x1 + $dx, $y1 + $dy, $color)
-                !! gdImageRectangle(      self, $x1, $y1, $x1 + $dx, $y1 + $dy, $color);
+                   gdImageFilledRectangle(self, $x1, $y1, $x2, $y2, $color)
+                !! gdImageRectangle(      self, $x1, $y1, $x2, $y2, $color);
+        }
+
+        multi method rectangle(
+            List :$center     (Int $x0 where { $x0 ≥ 0 }, Int $y0 where { $y0 ≥ 0 }) = (0, 0),
+            List :$half-size! (Int $dx where { $dx > 0 }, Int $dy where { $dy > 0 }),
+             Int :$color where { $color ≥ 0 } = 0,
+            Bool :$fill = False) {
+
+            $fill ??
+                   gdImageFilledRectangle(self, $x0 - $dx, $y0 - $dy, $x0 + $dx, $y0 + $dy, $color)
+                !! gdImageRectangle(      self, $x0 - $dx, $y0 - $dy, $x0 + $dx, $y0 + $dy, $color);
         }
 
         # style to enum

@@ -1,0 +1,86 @@
+#/usr/bin/env raku
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Les différentes façons de dessiner un rectangle
+# Checking the various ways to draw a rectangle
+#
+
+use Test;
+use GD;
+use MIME::Base64;
+
+my @variant = ( ("Size1", sub ($im, $black) { $im.rectangle(location => (10, 10), size => ( 21,  11), color => $black); })
+              , ("Size2", sub ($im, $black) { $im.rectangle(location => (30, 10), size => (-21,  11), color => $black); })
+              , ("Size3", sub ($im, $black) { $im.rectangle(location => (10, 20), size => ( 21, -11), color => $black); })
+              , ("Size4", sub ($im, $black) { $im.rectangle(location => (30, 20), size => (-21, -11), color => $black); })
+              , ("Alt1" , sub ($im, $black) { $im.rectangle(location => (10, 10), alt-location => (30, 20), color => $black); })
+              , ("Alt2" , sub ($im, $black) { $im.rectangle(location => (30, 10), alt-location => (10, 20), color => $black); })
+              , ("Alt3" , sub ($im, $black) { $im.rectangle(location => (10, 20), alt-location => (30, 10), color => $black); })
+              , ("Alt4" , sub ($im, $black) { $im.rectangle(location => (30, 20), alt-location => (10, 10), color => $black); })
+              , ("Centr", sub ($im, $black) { $im.rectangle(center   => (20, 15), half-size => (10, 5), color => $black); })
+);
+plan @variant.elems;
+
+for @variant -> ($lbl, $code) {
+  my $width  = 50;
+  my $height = 30;
+  my $im     = GD::Image.new($width, $height);
+  my $white  = $im.colorAllocate(red => 255, green => 255, blue => 255);
+  my $black  = $im.colorAllocate(red =>   0, green =>   0, blue =>   0);
+
+  #$im.rectangle(location => (10, 10), size => (21, 11), color => $black);
+  $code($im, $black);
+
+  my $png =  MIME::Base64.encode($im.png);
+  my $test = qq :to/EOF/;
+  <html>
+  <head><title>Rectangle</title></head>
+  <body>
+  <h1>Embedded PNG data</h1>
+  <img src='data:image/png;base64,$png'>
+  </body>
+  </html>
+  EOF
+  '040-test.html'.IO.spurt($test) if $lbl eq 'Centr';
+
+  $im.destroy;
+
+  my $ref = $*PROGRAM.sibling("data/040-rectangle.html").IO.slurp;
+  ok $test eq $ref, "checking $lbl";
+
+}
+
+=begin POD
+
+=head1 NAME
+
+040-rectangle.raku - check the various ways to draw a rectangle
+
+=head1 SYNOPSIS
+
+  raku -I. xt/040-rectangle.rakutest
+
+=head1 DESCRIPTION
+
+This program creates several pictures showing a rectangle and compares
+each one with a reference picture.
+
+=head1 PARAMETERS
+
+None.
+
+=head1 PREREQUISITE
+
+Raku modules C<GD> and C<MIME::Base64>.
+
+=head1 AUTHOR
+
+Jean Forget <J2N-FORGET at orange dot fr>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (c) 2026 Jean Forget, all rights reserved
+
+This program is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
+
+=end POD

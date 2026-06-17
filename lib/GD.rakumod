@@ -2,11 +2,12 @@ use v6;
 
 use NativeCall :TEST, :DEFAULT;
 use NativeHelpers::Array;
+use NativeHelpers::Blob;
 use LibraryCheck;
 
 enum GD_Format <GD_GIF GD_JPEG GD_PNG>;
 
-module GD {
+module GD:ver<0.0.3>:api<1.0> {
 
     my Str $lib;
 
@@ -105,12 +106,52 @@ module GD {
 
         sub gdImagePng(GD::Image, GD::File) is native(LIB) { ... };
 
+        sub gdImageBmpPtr(GD::Image $image, int32 $size is rw, int32 $compression)
+            returns OpaquePointer
+            is native(LIB) { ... }
+
+        sub gdImageGdPtr(GD::Image $image, int32 $size is rw)
+            returns OpaquePointer
+            is native(LIB) { ... }
+
+        sub gdImageGifPtr(GD::Image $image, int32 $size is rw)
+            returns OpaquePointer
+            is native(LIB) { ... }
+
+        sub gdImageJpegPtr(GD::Image $image, int32 $size is rw, int32 $quality)
+            returns OpaquePointer
+            is native(LIB) { ... }
+
+        sub gdImagePngPtr(GD::Image, int32 $size is rw)
+            returns OpaquePointer
+            is native(LIB) { ... };
+
+        sub gdImagePngPtrEx(GD::Image $image, int32 $size is rw, int32 $compression)
+            returns OpaquePointer
+            is native(LIB) { ... }
+
+        sub gdImageTiffPtr(GD::Image $image, int32 $size is rw)
+            returns OpaquePointer
+            is native(LIB) { ... }
+
+        sub gdImageWebpPtr(GD::Image $image, int32 $size is rw)
+            returns OpaquePointer
+            is native(LIB) { ... }
+
+        sub gdImageWebpPtrEx(GD::Image $image, int32 $size is rw, int32 $quality)
+            returns OpaquePointer
+            is native(LIB) { ... }
+
         sub gdImageCreate(int32, int32 --> GD::Image ) is native(LIB) { ... };
 
         sub gdImageColorAllocate(GD::Image, int32, int32, int32 --> int32 ) is native(LIB) { ... };
 
         sub gdImageSetPixel(GD::Image, int32, int32, int32)
             is native(LIB) { ... };
+
+        sub gdImageSetThickness(GD::Image $im, int32 $thickness)
+            #returns void
+            is native(LIB) {*}
 
         sub gdImageLine(GD::Image, int32, int32, int32, int32, int32)
             is native(LIB) { ... };
@@ -185,6 +226,10 @@ module GD {
             gdImageSetPixel(self, $x, $y, $color);
         }
 
+        method setThickness( Int $thickness where { $thickness > 0 } ) {
+            gdImageSetThickness(self, $thickness);
+        }
+
         method line(
             List :$start (Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
             List :$end! (Int $x2 where { $x2 >= 0 }, Int $y2 where { $y2 >= 0 }),
@@ -193,15 +238,41 @@ module GD {
             gdImageLine(self, $x1, $y1, $x2, $y2, $color);
         }
 
-        method rectangle(
-            List :$location (Int $x1 where { $x1 >= 0 }, Int $y1 where { $y1 >= 0 }) = (0, 0),
-            List :$size! (Int $x2 where { $x2 > 0 }, Int $y2 where { $y2 > 0 }),
-               Int :$color where { $color >= 0 } = 0,
-              Bool :$fill = False) {
+        multi method rectangle(
+            List :$location (Int $x1 where { $x1 ≥ 0 }, Int $y1 where { $y1 ≥ 0 }) = (0, 0),
+            List :$size! (Int $dx, Int $dy ),
+             Int :$color where { $color ≥ 0 } = 0,
+            Bool :$fill = False) {
+            my Int $x2 = $x1 + $dx - 1;
+            my Int $y2 = $y1 + $dy - 1;
+            $x2 = $x1 + 1 + $dx if $dx < 0;
+            $y2 = $y1 + 1 + $dy if $dy < 0;
 
             $fill ??
-                gdImageFilledRectangle(self, $x1, $y1, $x2, $y2, $color) !!
-                gdImageRectangle(self, $x1, $y1, $x2, $y2, $color);
+                   gdImageFilledRectangle(self, $x1, $y1, $x2, $y2, $color)
+                !! gdImageRectangle(      self, $x1, $y1, $x2, $y2, $color);
+        }
+
+        multi method rectangle(
+            List :$location      (Int $x1 where { $x1 ≥ 0 }, Int $y1 where { $y1 ≥ 0 }) = (0, 0),
+            List :$alt-location! (Int $x2 where { $x2 ≥ 0 }, Int $y2 where { $y2 ≥ 0 }),
+             Int :$color where { $color ≥ 0 } = 0,
+            Bool :$fill = False) {
+
+            $fill ??
+                   gdImageFilledRectangle(self, $x1, $y1, $x2, $y2, $color)
+                !! gdImageRectangle(      self, $x1, $y1, $x2, $y2, $color);
+        }
+
+        multi method rectangle(
+            List :$center     (Int $x0 where { $x0 ≥ 0 }, Int $y0 where { $y0 ≥ 0 }) = (0, 0),
+            List :$half-size! (Int $dx where { $dx > 0 }, Int $dy where { $dy > 0 }),
+             Int :$color where { $color ≥ 0 } = 0,
+            Bool :$fill = False) {
+
+            $fill ??
+                   gdImageFilledRectangle(self, $x0 - $dx, $y0 - $dy, $x0 + $dx, $y0 + $dy, $color)
+                !! gdImageRectangle(      self, $x0 - $dx, $y0 - $dy, $x0 + $dx, $y0 + $dy, $color);
         }
 
         # style to enum
@@ -270,6 +341,78 @@ module GD {
                 gdImageJpeg(self, $filepointer, $quality) when GD_JPEG;
                 gdImagePng(self, $filepointer) when GD_PNG;
             }
+        }
+
+        method bmp($compression = 0) {
+            my int32 $size;
+            my $ptr  = gdImageBmpPtr(self, $size, $compression);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        method gd() {
+            my int32 $size;
+            my $ptr  = gdImageGdPtr(self, $size);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        method gif() {
+            my int32 $size;
+            my $ptr  = gdImageGifPtr(self, $size);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        method jpeg($quality = -1) {
+            my int32 $size;
+            my $ptr  = gdImageJpegPtr(self, $size, $quality);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        multi method png() {
+            my int32 $size;
+            my $ptr  = gdImagePngPtr(self, $size);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        multi method png($level) {
+            my int32 $size;
+            my $ptr  = gdImagePngPtrEx(self, $size, $level);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        method tiff() {
+            my int32 $size;
+            my $ptr  = gdImageTiffPtr(self, $size);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        multi method webp() {
+            my int32 $size;
+            my $ptr  = gdImageWebpPtr(self, $size);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
+        }
+
+        multi method webp($quality) {
+            my int32 $size;
+            my $ptr  = gdImageWebpPtrEx(self, $size, $quality);
+            my $blob = blob-from-pointer($ptr, elems => $size, type => Blob[int8]);
+            gdFree($ptr);
+            return $blob;
         }
 
         method destroy() {

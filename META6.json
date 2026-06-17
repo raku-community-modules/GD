@@ -2,12 +2,12 @@
    "perl" : "6.*",
    "raku" : "6.*",
    "name" : "GD",
-   "version" : "0.0.2",
+   "version" : "0.0.3",
    "api" : "1.0",
    "auth": "github:raku-community-modules",
    "description" : "Raku interface to the Gd graphics library.",
    "provides": {
-      "GD": "lib/GD.pm"
+      "GD": "lib/GD.rakumod"
    },
    "authors" : [
       "Henrique Dias",
@@ -15,7 +15,8 @@
    ],
    "depends" : [
       "LibraryCheck",
-      "NativeHelpers::Array"
+      "NativeHelpers::Array",
+      "NativeHelpers::Blob"
    ],
    "source-url" : "https://github.com/raku-community-modules/GD.git",
    "support" : {

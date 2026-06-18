@@ -1,6 +1,8 @@
 Revision history for GD
 
 {{$NEXT}}
+
+0.0.3  2026-06-18T23:04:17+02:00
     - Streamline to use newer Raku functionality
     - Lock down dependencies better
     - Use the new file extensions such as .rakumod

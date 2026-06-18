@@ -50,6 +50,8 @@ for @variant -> ($lbl, $code) {
 
 }
 
+'040-test.html'.IO.unlink;
+
 =begin POD
 
 =head1 NAME

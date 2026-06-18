@@ -54,3 +54,5 @@ EOF
 
 my $ref = $*PROGRAM.sibling("data/020-blobs.html").IO.slurp;
 ok $test eq $ref;
+
+# vim: expandtab shiftwidth=4

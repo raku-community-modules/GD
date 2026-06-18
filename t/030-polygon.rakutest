@@ -1,9 +1,4 @@
-#!/usr/bin/env raku
-
-use v6;
-
 use Test;
-
 use GD;
 
 my $file = $*PROGRAM.parent.add("test_polygon.png");
@@ -59,3 +54,5 @@ else {
 }
 
 done-testing;
+
+# vim: expandtab shiftwidth=4

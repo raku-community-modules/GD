@@ -1,98 +1,136 @@
-[![Build Status](https://travis-ci.org/raku-community-modules/raku-GD.svg)](https://travis-ci.org/raku-community-modules/raku-GD)
+[![Actions Status](https://github.com/raku-community-modules/GD/actions/workflows/linux.yml/badge.svg)](https://github.com/raku-community-modules/GD/actions) [![Actions Status](https://github.com/raku-community-modules/GD/actions/workflows/macos.yml/badge.svg)](https://github.com/raku-community-modules/GD/actions) [![Actions Status](https://github.com/raku-community-modules/GD/actions/workflows/windows.yml/badge.svg)](https://github.com/raku-community-modules/GD/actions)
 
-raku-GD
-========
+NAME
+====
 
-![GD Logo](logotype/logo_32x32.png)
 Raku interface to the Gd graphics library.
 
-Description
------------
-Raku interface to Thomas Boutell's [gd graphics library][2]. GD allows you to create color drawings using a large number of graphics primitives, and emit the drawings in multiple formats.
-You will need the Linux `gd-libgd` library or OS X `gd2` port installed in order to use raku-GD (preferably a recent version).
+DESCRIPTION
+===========
 
-Synopsis
---------
+Raku interface to Thomas Boutell's gd graphics library. GD allows you to create color drawings using a large number of graphics primitives, and emit the drawings in multiple formats.
 
-WARNING: This module is Work in Progress, which means: this interface is not final. This will perhaps change in the future.
-A sample of the code can be seen below.
+You will need the Linux gd-libgd library or MacOS gd2 port installed in order to use GD (preferably a recent version).
 
-   use GD;
+SYNOPSIS
+========
 
-   if GD::Image.new(200, 200) -> $image {
+```raku
+use GD;
 
-      my $black = $image.colorAllocate(
-         red   => 0,
-         green => 0,
-         blue  => 0);
+if GD::Image.new(200, 200) -> $image {
 
-      my $white = $image.colorAllocate(
-         red   => 255,
-         green => 255,
-         blue  => 255);
+    my $black = $image.colorAllocate(
+      red => 0, green => 0, blue => 0
+    );
 
-      my $red   = $image.colorAllocate("#ff0000");
-      my $green = $image.colorAllocate("#00ff00");
-      my $blue  = $image.colorAllocate(0x0000ff);
+    my $white = $image.colorAllocate(
+      red => 255, green => 255, blue => 255
+    );
 
-      $image.rectangle(
-         location => (10, 10),
-         size     => (100, 100),
-         fill     => True,
-         color    => $white);
+    my $red   = $image.colorAllocate("#ff0000");
+    my $green = $image.colorAllocate("#00ff00");
+    my $blue  = $image.colorAllocate(0x0000ff);
 
-      $image.line(
-         start => (10, 10),
-         end   => (190, 190),
-         color => $black);
+    $image.rectangle(
+      location => (10, 10),
+      size     => (100, 100),
+      fill     => True,
+      color    => $white
+    );
 
-      my $png_fh = $image.open("test.png", "wb");
+    $image.line(
+      start => (10, 10),
+      end   => (190, 190),
+      color => $black
+    );
 
-      $image.output($png_fh, GD_PNG);
+    my $png_fh = $image.open("test.png", "wb");
 
-      $png_fh.close;
+    $image.output($png_fh, GD_PNG);
 
-      $image.destroy();
-   }
+    $png_fh.close;
 
+    $image.destroy();
+}
+```
 
-Installation
-------------
+API REFERENCE
+=============
 
-Assuming you have a working Rakudo install (and you have the GD library installed as described above,) you should be able to do:
+The Raku API
 
-    zef install GD
+Color Control
+-------------
 
-Or if you have a local copy of this repository:
+### `colorAllocate`
 
-    zef install .
+Drawing Commands
+----------------
 
+### `pixel`
 
-Support
--------
+### `setThickness`
 
-Please report any bugs or send any patches on [Github](https://github.com/raku-community-modules/raku-GD/issues)
+### `line`
 
+### `rectangle`
 
-Authors
-------
+### `arc`
 
-Henrique Dias
-Raku Community Module Authors
+### `circumference`
 
-See Also
---------
-* [GD Raku Module Documentation][1]
-* [GD Source Repository][2]
-* [C examples from GD source repository][3]
+### `ellipse`
 
-License
--------
+### `polygon`
 
-This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+Output Methods
+--------------
 
-Please see the [LICENCE](LICENCE) in the source directory for full details.
+### `open`
 
-[1]: lib/GD.pod "GD Perl6 Module Documentation"
-[2]: https://github.com/libgd/libgd/ "GD Source Repository"
-[3]: https://github.com/libgd/libgd/tree/master/examples "C examples from GD source repository"
+### `output`
+
+Blob Generation Methods
+-----------------------
+
+### `bmp`
+
+### `gd`
+
+### `gif`
+
+### `jpeg`
+
+### `png`
+
+### `tiff`
+
+### `webp`
+
+Memory Management
+-----------------
+
+### `destroy`
+
+AUTHORS
+=======
+
+  * Henrique Dias
+
+  * Raku Community
+
+SEE ALSO
+========
+
+[GD Source Repository](https://github.com/libgd).
+
+COPYRIGHT AND LICENSE
+=====================
+
+Copyright 2013 - 2019 by Salvador Ortiz
+
+Copyright 2014 - 2026 Raku Community
+
+This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
+

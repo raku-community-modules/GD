@@ -1,35 +1,40 @@
 {
-   "perl" : "6.*",
-   "raku" : "6.*",
-   "name" : "GD",
-   "version" : "0.0.3",
-   "api" : "1.0",
-   "auth": "github:raku-community-modules",
-   "description" : "Raku interface to the Gd graphics library.",
-   "provides": {
-      "GD": "lib/GD.rakumod"
-   },
-   "authors" : [
-      "Henrique Dias",
-      "Raku Community Modules Authors"
-   ],
-   "depends" : [
-      "LibraryCheck",
-      "NativeHelpers::Array",
-      "NativeHelpers::Blob"
-   ],
-   "source-url" : "https://github.com/raku-community-modules/GD.git",
-   "support" : {
-      "source" : "https://github.com/raku-community-modules/GD.git",
-      "bugtracker" : "https://github.com/raku-community-modules/GD/issues"
-
-   },
-   "tags" : [
-      "graphics",
-      "gd",
-      "png",
-      "gif"
-   ],
-   "license": "Artistic-2.0",
-   "meta-version": "1"
+  "api": "1.0",
+  "auth": "zef:raku-community-modules",
+  "authors": [
+    "Henrique Dias",
+    "Raku Community Modules Authors"
+  ],
+  "build-depends": [
+  ],
+  "depends": [
+    "LibraryCheck:ver<0.0.12+>:auth<zef:jonathanstowe>",
+    "NativeHelpers::Array:ver<0.0.6+>:auth<zef:jonathanstowe>",
+    "NativeHelpers::Blob:ver<0.1.12+>:auth<zef:raku-community-modules>"
+  ],
+  "description": "Raku interface to the GD graphics library.",
+  "license": "Artistic-2.0",
+  "meta-version": "1",
+  "name": "GD",
+  "provides": {
+    "GD": "lib/GD.rakumod"
+  },
+  "raku": "6.*",
+  "resources": [
+  ],
+  "source-url": "https://github.com/raku-community-modules/GD.git",
+  "support": {
+    "bugtracker": "https://github.com/raku-community-modules/GD/issues",
+    "email": "community@raku.org",
+    "source": "https://github.com/raku-community-modules/GD.git"
+  },
+  "tags": [
+    "GRAPHICS",
+    "GD",
+    "PNG",
+    "GIF"
+  ],
+  "test-depends": [
+  ],
+  "version": "0.0.3"
 }

@@ -1,13 +1,13 @@
-use v6;
-
 use Test;
+use GD;
+
+plan 2;
 
 my $file = $*PROGRAM.parent.add('test.png');
 
 $file.unlink;
 
 lives-ok {
-   use GD;
 
    if GD::Image.new(200, 200) -> $image {
 
@@ -50,4 +50,4 @@ ok $file.e, "and the output file was created";
 
 $file.unlink;
 
-done-testing;
+# vim: expandtab shiftwidth=4

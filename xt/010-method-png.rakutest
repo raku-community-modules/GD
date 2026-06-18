@@ -2,8 +2,6 @@
 #
 # Testing the generation of graphic data into a blob instead of into a file
 #
-use v6;
-
 use Test;
 use MIME::Base64;
 
@@ -70,3 +68,5 @@ $g-file.unlink;
 $h-file.unlink;
 
 done-testing;
+
+# vim: expandtab shiftwidth=4

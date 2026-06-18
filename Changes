@@ -1,16 +1,20 @@
-v0.0.3 xxx
-    * Use the new file extensions such as .rakumod
-    * Method loading the PNG graphic data into a blob variable, without using a file
-    * Fix issue #14 from Github "erratic behaviour of rectangle method"
-    * allow drawing with various thicknesses
-    * add method to draw a rectangle from its center
+Revision history for GD
 
-v0.0.2 Mon 29 Jun 17:17:47 BST 2020
-    * Remove native malloc() and free()
-    * Throw an exception if file can't be opened
-    * Do not require the gd-devel package
-    * Fix type constraint errors in polygon
-    * Rename → Raku
+{{$NEXT}}
+    - Streamline to use newer Raku functionality
+    - Lock down dependencies better
+    - Use the new file extensions such as .rakumod
+    - Method loading the PNG graphic data into a blob variable, without using a file
+    - Fix issue #14 from Github "erratic behaviour of rectangle method"
+    - Allow drawing with various thicknesses
+    - Add method to draw a rectangle from its center
 
-v0.0.1 Tue Apr 25 10:24:18 2017
-    * Initial Release
+0.0.2  Mon 29 Jun 17:17:47 BST 2020
+    - Remove native malloc() and free()
+    - Throw an exception if file can't be opened
+    - Do not require the gd-devel package
+    - Fix type constraint errors in polygon
+    - Rename → Raku
+
+0.0.1  Tue Apr 25 10:24:18 2017
+      - Initial Release

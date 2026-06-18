@@ -1,8 +1,8 @@
-use v6;
-
 use Test;
 
 use GD;
+
+plan 9;
 
 ok 1, 'GD is loaded successfully';
 
@@ -14,29 +14,32 @@ isa-ok $image, GD::Image, "Successfully created a GD::Image";
 my ( $white, $black );
 
 lives-ok {
-    ok ($black = $image.colorAllocate(
-        red   => 0,
-        green => 0,
-        blue  => 0)).defined, "colorAllocate with named arguments";
+    $black = $image.colorAllocate(
+      red   => 0, green => 0, blue  => 0
+    );
 
-    ok $white = $image.colorAllocate("#ffffff"), "colorAllocate with hex colour";
+    $white = $image.colorAllocate("#ffffff");
 }, 'Colors created successfully';
 
+ok $black.defined, "colorAllocate with named arguments";
+ok $white, "colorAllocate with hex colour";
 
 lives-ok {
     $image.rectangle(
-        location => (10, 10),
-        size     => (100, 100),
-        fill     => True,
-        color    => $white);
+      location => (10, 10),
+      size     => (100, 100),
+      fill     => True,
+      color    => $white
+    );
 }, 'rectangle';
 
 
 lives-ok {
-$image.line(
-    start => (10, 10),
-    end   => (190, 190),
-    color => $black);
+    $image.line(
+      start => (10, 10),
+      end   => (190, 190),
+      color => $black
+    );
 }, 'line';
 
 $file.unlink;
@@ -55,4 +58,4 @@ lives-ok {
 
 $file.unlink;
 
-done-testing;
+# vim: expandtab shiftwidth=4

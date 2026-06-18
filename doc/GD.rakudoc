@@ -1,0 +1,129 @@
+=begin pod
+
+=head1 NAME
+
+Raku interface to the Gd graphics library.
+
+=head1 DESCRIPTION
+
+Raku interface to Thomas Boutell's gd graphics library. GD allows you
+to create color drawings using a large number of graphics primitives,
+and emit the drawings in multiple formats.
+
+You will need the Linux gd-libgd library or MacOS gd2 port installed
+in order to use GD (preferably a recent version).
+
+=head1 SYNOPSIS
+
+=begin code :lang<raku>
+use GD;
+
+if GD::Image.new(200, 200) -> $image {
+
+    my $black = $image.colorAllocate(
+      red => 0, green => 0, blue => 0
+    );
+
+    my $white = $image.colorAllocate(
+      red => 255, green => 255, blue => 255
+    );
+
+    my $red   = $image.colorAllocate("#ff0000");
+    my $green = $image.colorAllocate("#00ff00");
+    my $blue  = $image.colorAllocate(0x0000ff);
+
+    $image.rectangle(
+      location => (10, 10),
+      size     => (100, 100),
+      fill     => True,
+      color    => $white
+    );
+
+    $image.line(
+      start => (10, 10),
+      end   => (190, 190),
+      color => $black
+    );
+
+    my $png_fh = $image.open("test.png", "wb");
+
+    $image.output($png_fh, GD_PNG);
+
+    $png_fh.close;
+
+    $image.destroy();
+}
+=end code
+
+=head1 API REFERENCE
+
+The Raku API
+
+=head2 Color Control
+
+=head3 C<colorAllocate>
+
+=head2 Drawing Commands
+
+=head3 C<pixel>
+
+=head3 C<setThickness>
+
+=head3 C<line>
+
+=head3 C<rectangle>
+
+=head3 C<arc>
+
+=head3 C<circumference>
+
+=head3 C<ellipse>
+
+=head3 C<polygon>
+
+=head2 Output Methods
+
+=head3 C<open>
+
+=head3 C<output>
+
+=head2 Blob Generation Methods
+
+=head3 C<bmp>
+
+=head3 C<gd>
+
+=head3 C<gif>
+
+=head3 C<jpeg>
+
+=head3 C<png>
+
+=head3 C<tiff>
+
+=head3 C<webp>
+
+=head2 Memory Management
+
+=head3 C<destroy>
+
+=head1 AUTHORS
+
+=item Henrique Dias
+=item Raku Community
+
+=head1 SEE ALSO
+
+L<GD Source Repository|https://github.com/libgd>.
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2013 - 2019 by Salvador Ortiz
+
+Copyright 2014 - 2026 Raku Community
+
+This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
+
+=end pod
+
+# vim: expandtab shiftwidth=4

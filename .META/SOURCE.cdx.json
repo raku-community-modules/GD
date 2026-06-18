@@ -4,7 +4,7 @@
   "specVersion": "1.6",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-06-18T21:04:43+00:00",
+    "timestamp": "2026-06-18T21:33:27+00:00",
     "lifecycles": [
       {
         "phase": "pre-build"
@@ -23,7 +23,7 @@
     "component": {
       "type": "library",
       "mime-type": "text/plain",
-      "bom-ref": "pkg:raku/zef:raku-community-modules/GD@0.0.3:1.0",
+      "bom-ref": "pkg:raku/zef:raku-community-modules/GD@0.0.4:1.0",
       "authors": [
         {
           "bom-ref": "HenriqueDias",
@@ -37,7 +37,7 @@
       "publisher": "zef",
       "group": "zef:raku-community-modules",
       "name": "GD",
-      "version": "0.0.3",
+      "version": "0.0.4",
       "description": "Raku interface to the GD graphics library.",
       "scope": "required",
       "licenses": [
@@ -49,14 +49,14 @@
           }
         }
       ],
-      "purl": "pkg:raku/zef:raku-community-modules/GD@0.0.3:1.0",
+      "purl": "pkg:raku/zef:raku-community-modules/GD@0.0.4:1.0",
       "externalReferences": [
         {
           "url": "https://github.com/raku-community-modules/GD",
           "type": "distribution"
         },
         {
-          "url": "https://raku.land/zef:raku-community-modules/GD?v=0.0.3",
+          "url": "https://raku.land/zef:raku-community-modules/GD?v=0.0.4",
           "type": "documentation"
         },
         {
@@ -68,7 +68,7 @@
           "type": "license"
         },
         {
-          "url": "https://github.com/raku-community-modules/GD/archive/refs/tags/0.0.3.zip",
+          "url": "https://github.com/raku-community-modules/GD/archive/refs/tags/0.0.4.zip",
           "type": "source-distribution"
         },
         {
@@ -417,7 +417,7 @@
       "type": "distribution"
     },
     {
-      "url": "https://raku.land/zef:raku-community-modules/GD?v=0.0.3",
+      "url": "https://raku.land/zef:raku-community-modules/GD?v=0.0.4",
       "type": "documentation"
     },
     {
@@ -429,7 +429,7 @@
       "type": "license"
     },
     {
-      "url": "https://github.com/raku-community-modules/GD/archive/refs/tags/0.0.3.zip",
+      "url": "https://github.com/raku-community-modules/GD/archive/refs/tags/0.0.4.zip",
       "type": "source-distribution"
     },
     {

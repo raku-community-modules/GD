@@ -2,6 +2,9 @@ Revision history for GD
 
 {{$NEXT}}
 
+0.0.4  2026-06-18T23:33:42+02:00
+    - Fix copy-pasto in author documentation
+
 0.0.3  2026-06-18T23:04:17+02:00
     - Streamline to use newer Raku functionality
     - Lock down dependencies better

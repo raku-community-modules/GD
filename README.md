@@ -128,7 +128,7 @@ SEE ALSO
 COPYRIGHT AND LICENSE
 =====================
 
-Copyright 2013 - 2019 by Salvador Ortiz
+Copyright 2013 Henrique Dias
 
 Copyright 2014 - 2026 Raku Community
 

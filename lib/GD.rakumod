@@ -7,7 +7,7 @@ our enum GD_Format <GD_GIF GD_JPEG GD_PNG>;
 subset ColorValue of Int:D where 0 <= * <= 255;
 subset PInt       of Int:D where * > 0;
 
-module GD:ver<0.0.4> {
+module GD:ver<0.0.5> {
 
     my Str $lib;
 

@@ -33,6 +33,20 @@ module GD:ver<0.0.5> {
 
     constant LIB =  &find-lib-version;
 
+    sub GD-giant-font ( --> OpaquePointer )
+        is native(LIB) is export is symbol('gdFontGetGiant') {*}
+
+    sub GD-large-font ( --> OpaquePointer )
+        is native(LIB) is export is symbol('gdFontGetLarge') {*}
+
+    sub GD-medium-bold-font ( --> OpaquePointer )
+        is native(LIB) is export is symbol('gdFontGetMediumBold') {*}
+
+    sub GD-small-font ( -->  OpaquePointer )
+        is native(LIB) is export is symbol('gdFontGetSmall') {*}
+
+    sub GD-tiny-font ( --> OpaquePointer )
+        is native(LIB) is export is symbol('gdFontGetTiny') {*}
 
     my $errno := cglobal(Str, 'errno', int32);
 
@@ -205,6 +219,14 @@ module GD:ver<0.0.5> {
           GD::Image, CArray[int32], int32, int32
         ) is native(LIB) { ... }
 
+        sub gdImageString(
+          GD::Image $im, OpaquePointer $font, int32 $x, int32 $y, Str, int32 $color
+        ) is native(LIB) { ... }
+
+        sub gdImageStringUp(
+          GD::Image $im, OpaquePointer $font, int32 $x, int32 $y, Str, int32 $color
+        ) is native(LIB) { ... }
+
         sub gdFree( OpaquePointer) is native(LIB) { ... }
 
         sub gdImageDestroy(GD::Image) is native(LIB) { ... }
@@ -356,6 +378,21 @@ module GD:ver<0.0.5> {
                 !! gdImagePolygon(self, $gdPoints, $n, $color);
 
             $gdPoints
+        }
+
+        method string(
+          OpaquePointer :$font,
+          List          :$location (Int $x1 where { $x1 ≥ 0 }, Int $y1 where { $y1 ≥ 0 }) = (0, 0),
+          Str           :$text,
+          Int           :$color where { $color >= 0 } = 0,
+          Bool          :$up = False
+        ) {
+            if $up {
+              gdImageStringUp(self, $font, $x1, $y1, $text, $color);
+            }
+            else {
+              gdImageString(  self, $font, $x1, $y1, $text, $color);
+            }
         }
 
         method open(Str() $filename, Str $mode --> GD::File ) {

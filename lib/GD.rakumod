@@ -32,6 +32,8 @@ module GD:ver<0.0.5> {
     }
 
     constant LIB =  &find-lib-version;
+    constant GD-styled      is export = -2;
+    constant GD-transparent is export = -6;
 
     sub GD-giant-font ( --> OpaquePointer )
         is native(LIB) is export is symbol('gdFontGetGiant') {*}
@@ -175,6 +177,12 @@ module GD:ver<0.0.5> {
           GD::Image, int32, int32, int32
         ) is native(LIB) { ... }
 
+        sub gdImageSetStyle(
+          GD::Image      $im,
+          CArray[int32],
+          int32          $no-of-pixels
+        ) is native(LIB) { ... }
+
         sub gdImageSetThickness(
           GD::Image $im, int32 $thickness
         ) is native(LIB) {*}
@@ -269,6 +277,15 @@ module GD:ver<0.0.5> {
             gdImageSetPixel(self, $x, $y, $color)
         }
 
+        method set-style(@style) {
+            my Int $no-of-pixels = @style.elems;
+            my $array            = CArray[int32].allocate($no-of-pixels);
+            for @style.kv -> $i, $v {
+              $array[$i] = $v;
+            }
+            gdImageSetStyle(self, $array, $no-of-pixels);
+        }
+
         method setThickness(UInt $thickness) {
             gdImageSetThickness(self, $thickness);
         }
@@ -276,7 +293,7 @@ module GD:ver<0.0.5> {
         method line(
           List:D :$start (UInt $x1, UInt $y1) = (0, 0),
           List:D :$end!  (UInt $x2, UInt $y2),
-          UInt   :$color = 0
+          Int    :$color where { $color == GD-styled || $color >= 0 } = 0,
         ) {
             gdImageLine(self, $x1, $y1, $x2, $y2, $color)
         }

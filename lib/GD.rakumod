@@ -248,6 +248,7 @@ module GD:ver<0.0.5> {
             if $color-or-style == GD-styled {
               die "a filled shape cannot use a style";
             }
+            # activate these tests when implementing new features
             #if $color-or-style == GD-brushed {
             #  die "a filled shape cannot use a brush";
             #}
@@ -259,6 +260,16 @@ module GD:ver<0.0.5> {
             #if $color-or-style == GD-tiled {
             #  die "an empty shape cannot use tiling";
             #}
+          }
+          # remove these tests when implementing new features
+          if $color-or-style == GD-brushed {
+            die "brushes are not implemented";
+          }
+          if $color-or-style == GD-styled-brushed {
+            die "combinations style + brush are not implemented";
+          }
+          if $color-or-style == GD-tiled {
+            die "tiling is not implemented";
           }
         }
         ### METHODS ###

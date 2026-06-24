@@ -1,0 +1,110 @@
+#/usr/bin/env raku
+# -*- encoding: utf-8; indent-tabs-mode: nil -*-
+#
+# Vérification des contrôles de compatibilité entre "fill" et "GD-styled"
+# Checking the compatibility between "fill" and "GD-styled"
+#
+
+use Test;
+use GD;
+
+my $name   = '070-fatal-styled';
+my $width  = 120;
+my $height =  50;
+my $im     = GD::Image.new($width, $height);
+my $white  = $im.colorAllocate(red => 255, green => 255, blue => 255);
+my $black  = $im.colorAllocate(red =>   0, green =>   0, blue =>   0);
+
+$im.set-style( ($black, $black, GD-transparent, GD-transparent) );
+my Int @poly = 10, 10, 10, 20, 20, 10;
+
+plan 10; # or 40 when brushes and tiles are implemented
+
+# lines: 1, then 4
+lives-ok( { $im.line( start => (10, 10), end => (20, 20), color => GD-styled        ) }, "a line can use a style");
+#lives-ok( { $im.line( start => (10, 10), end => (20, 20), color => GD-brushed       ) }, "a line can use a brush");
+#lives-ok( { $im.line( start => (10, 10), end => (20, 20), color => GD-styled-brushed) }, "a line can use a style and a brush");
+#dies-ok(  { $im.line( start => (10, 10), end => (20, 20), color => GD-tiled         ) }, "a line cannot use tiling");
+
+# rectangles, first variant: 2, then 8
+lives-ok( { $im.rectangle( location => (10, 10), alt-location => (20, 20), fill => False, color => GD-styled        ) }, "an empty rectangle can use a style");
+dies-ok(  { $im.rectangle( location => (10, 10), alt-location => (20, 20), fill => True , color => GD-styled        ) }, "a filled rectangle cannot use a style");
+#lives-ok( { $im.rectangle( location => (10, 10), alt-location => (20, 20), fill => False, color => GD-brushed       ) }, "an empty rectangle can use a brush");
+#dies-ok(  { $im.rectangle( location => (10, 10), alt-location => (20, 20), fill => True , color => GD-brushed       ) }, "a filled rectangle cannot use a brush");
+#lives-ok( { $im.rectangle( location => (10, 10), alt-location => (20, 20), fill => False, color => GD-styled-brushed) }, "an empty rectangle can use a style and a brush");
+#dies-ok(  { $im.rectangle( location => (10, 10), alt-location => (20, 20), fill => True , color => GD-styled-brushed) }, "a filled rectangle cannot use a style and a brush");
+#dies-ok(  { $im.rectangle( location => (10, 10), alt-location => (20, 20), fill => False, color => GD-tiled         ) }, "an empty rectangle cannot use tiling");
+#lives-ok( { $im.rectangle( location => (10, 10), alt-location => (20, 20), fill => True , color => GD-tiled         ) }, "a filled rectangle can use tiling");
+
+# rectangles, second variant: 2, then 8
+lives-ok( { $im.rectangle( location => (10, 10), size => (11, 11), fill => False, color => GD-styled        ) }, "an empty rectangle can use a style");
+dies-ok(  { $im.rectangle( location => (10, 10), size => (11, 11), fill => True , color => GD-styled        ) }, "a filled rectangle cannot use a style");
+#lives-ok( { $im.rectangle( location => (10, 10), size => (11, 11), fill => False, color => GD-brushed       ) }, "an empty rectangle can use a brush");
+#dies-ok(  { $im.rectangle( location => (10, 10), size => (11, 11), fill => True , color => GD-brushed       ) }, "a filled rectangle cannot use a brush");
+#lives-ok( { $im.rectangle( location => (10, 10), size => (11, 11), fill => False, color => GD-styled-brushed) }, "an empty rectangle can use a style and a brush");
+#dies-ok(  { $im.rectangle( location => (10, 10), size => (11, 11), fill => True , color => GD-styled-brushed) }, "a filled rectangle cannot use a style and a brush");
+#dies-ok(  { $im.rectangle( location => (10, 10), size => (11, 11), fill => False, color => GD-tiled         ) }, "an empty rectangle cannot use tiling");
+#lives-ok( { $im.rectangle( location => (10, 10), size => (11, 11), fill => True , color => GD-tiled         ) }, "a filled rectangle can use tiling");
+
+# rectangles, third variant: 2, then 8
+lives-ok( { $im.rectangle( center => (15, 15), half-size => (5, 5), fill => False, color => GD-styled        ) }, "an empty rectangle can use a style");
+dies-ok(  { $im.rectangle( center => (15, 15), half-size => (5, 5), fill => True , color => GD-styled        ) }, "a filled rectangle cannot use a style");
+#lives-ok( { $im.rectangle( center => (15, 15), half-size => (5, 5), fill => False, color => GD-brushed       ) }, "an empty rectangle can use a brush");
+#dies-ok(  { $im.rectangle( center => (15, 15), half-size => (5, 5), fill => True , color => GD-brushed       ) }, "a filled rectangle cannot use a brush");
+#lives-ok( { $im.rectangle( center => (15, 15), half-size => (5, 5), fill => False, color => GD-styled-brushed) }, "an empty rectangle can use a style and a brush");
+#dies-ok(  { $im.rectangle( center => (15, 15), half-size => (5, 5), fill => True , color => GD-styled-brushed) }, "a filled rectangle cannot use a style and a brush");
+#dies-ok(  { $im.rectangle( center => (15, 15), half-size => (5, 5), fill => False, color => GD-tiled         ) }, "an empty rectangle cannot use tiling");
+#lives-ok( { $im.rectangle( center => (15, 15), half-size => (5, 5), fill => True , color => GD-tiled         ) }, "a filled rectangle can use tiling");
+
+# polygons: 3, then 12
+lives-ok( { $im.polygon( points => @poly, half-size => (5, 5), fill => False, open => True , color => GD-styled        ) }, "an open  polygon can use a style");
+lives-ok( { $im.polygon( points => @poly, half-size => (5, 5), fill => False, open => False, color => GD-styled        ) }, "an empty polygon can use a style");
+dies-ok(  { $im.polygon( points => @poly, half-size => (5, 5), fill => True , open => False, color => GD-styled        ) }, "a filled polygon cannot use a style");
+#lives-ok( { $im.polygon( points => @poly, half-size => (5, 5), fill => False, open => True , color => GD-brushed       ) }, "an open  polygon can use a brush");
+#lives-ok( { $im.polygon( points => @poly, half-size => (5, 5), fill => False, open => False, color => GD-brushed       ) }, "an empty polygon can use a brush");
+#dies-ok(  { $im.polygon( points => @poly, half-size => (5, 5), fill => True , open => False, color => GD-brushed       ) }, "a filled polygon cannot use a brush");
+#lives-ok( { $im.polygon( points => @poly, half-size => (5, 5), fill => False, open => True , color => GD-styled-brushed) }, "an open  polygon can use a style and a brush");
+#lives-ok( { $im.polygon( points => @poly, half-size => (5, 5), fill => False, open => False, color => GD-styled-brushed) }, "an empty polygon can use a style and a brush");
+#dies-ok(  { $im.polygon( points => @poly, half-size => (5, 5), fill => True , open => False, color => GD-styled-brushed) }, "a filled polygon cannot use a style and a brush");
+#dies-ok(  { $im.polygon( points => @poly, half-size => (5, 5), fill => False, open => True , color => GD-tiled         ) }, "an open  polygon cannot use tiling");
+#dies-ok(  { $im.polygon( points => @poly, half-size => (5, 5), fill => False, open => False, color => GD-tiled         ) }, "an empty polygon cannot use tiling");
+#lives-ok( { $im.polygon( points => @poly, half-size => (5, 5), fill => True , open => False, color => GD-tiled         ) }, "a filled polygon can use tiling");
+
+$im.destroy;
+
+=begin POD
+
+=head1 NAME
+
+070-fatal-styled.rakutest - check compatibility between filled shapes and style / brush / tiling
+
+=head1 SYNOPSIS
+
+  raku -I. xt/070-fatal-styled.rakutest
+
+=head1 DESCRIPTION
+
+This program runs  several variants of the drawing  methods, to ensure
+that the various values of C<fill> and C<color> are properly checked.
+
+=head1 PARAMETERS
+
+None.
+
+=head1 PREREQUISITE
+
+Raku module C<GD>.
+
+=head1 AUTHOR
+
+Jean Forget <J2N-FORGET at orange dot fr>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (c) 2026 Jean Forget, all rights reserved
+
+This program is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
+
+=end POD
+
+# vim: expandtab shiftwidth=4

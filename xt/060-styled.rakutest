@@ -11,7 +11,7 @@ use MIME::Base64;
 
 my $name   = '060-styled';
 my $width  = 120;
-my $height =  50;
+my $height = 100;
 my $im     = GD::Image.new($width, $height);
 my $white  = $im.colorAllocate(red => 255, green => 255, blue => 255);
 my $black  = $im.colorAllocate(red =>   0, green =>   0, blue =>   0);
@@ -20,9 +20,14 @@ my $blue   = $im.colorAllocate(red =>   0, green =>   0, blue => 255);
 
 $im.set-style( ($red, $red, GD-transparent, GD-transparent) );
 $im.line(start => (10, 10), end => (100, 10), color => GD-styled);
+$im.rectangle(location => (60, 50), alt-location => (100, 60), color => GD-styled);
 $im.set-style( ( | ($blue xx 6), | (GD-transparent xx 6) ) );
 $im.line(start => (10, 20), end => (100, 20), color => GD-styled);
 $im.line(start => (10, 30), end => (100, 40), color => GD-styled);
+$im.rectangle(location => (10, 50), alt-location => (50, 60), color => GD-styled);
+
+my Int @poly = 60, 70, 110, 80, 60, 90, 10, 80;
+$im.polygon(points => @poly, open => False, fill => False, color => GD-styled);
 
 my $png =  MIME::Base64.encode($im.png);
 my $test = qq :to/EOF/;
@@ -46,7 +51,7 @@ done-testing;
 
 =head1 NAME
 
-060-styled.rakutest - draw dotted lines
+060-styled.rakutest - draw dotted lines / rectangles / polygons
 
 =head1 SYNOPSIS
 
@@ -54,8 +59,8 @@ done-testing;
 
 =head1 DESCRIPTION
 
-This program creates  a picture showing dotted lines  and compares the
-result with a reference picture.
+This program creates a picture showing dotted lines, dotted rectangles
+and a dotted polygon and compares the result with a reference picture.
 
 =head1 PARAMETERS
 

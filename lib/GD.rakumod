@@ -248,7 +248,9 @@ module GD:ver<0.0.5> {
             if $color-or-style == GD-styled {
               die "a filled shape cannot use a style";
             }
+            # TODO:
             # activate these tests when implementing new features
+            # and activate the corresponding checks in xt/070-fatal-styled.rakutest
             #if $color-or-style == GD-brushed {
             #  die "a filled shape cannot use a brush";
             #}
@@ -263,13 +265,13 @@ module GD:ver<0.0.5> {
           }
           # remove these tests when implementing new features
           if $color-or-style == GD-brushed {
-            die "brushes are not implemented";
+            die "brushes are not implemented yet";
           }
           if $color-or-style == GD-styled-brushed {
-            die "combinations style + brush are not implemented";
+            die "combinations style + brush are not implemented yet";
           }
           if $color-or-style == GD-tiled {
-            die "tiling is not implemented";
+            die "tiling is not implemented yet";
           }
         }
         ### METHODS ###
@@ -438,7 +440,7 @@ module GD:ver<0.0.5> {
           OpaquePointer :$font,
           List          :$location (Int $x1 where { $x1 ≥ 0 }, Int $y1 where { $y1 ≥ 0 }) = (0, 0),
           Str           :$text,
-          Int           :$color where { $color >= 0 } = 0,
+          Int           :$color where { $color ≥ 0 } = 0,
           Bool          :$up = False
         ) {
             if $up {

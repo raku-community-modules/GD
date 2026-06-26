@@ -70,6 +70,8 @@ Drawing Commands
 
 ### `pixel`
 
+### `set-style`
+
 ### `setThickness`
 
 ### `line`
@@ -83,6 +85,8 @@ Drawing Commands
 ### `ellipse`
 
 ### `polygon`
+
+### `string`
 
 Output Methods
 --------------
@@ -108,6 +112,19 @@ Blob Generation Methods
 
 ### `webp`
 
+Fonts
+-----
+
+### `GD-giant-font`
+
+### `GD-large-font`
+
+### `GD-medium-bold-font`
+
+### `GD-small-font`
+
+### `GD-tiny-font`
+
 Memory Management
 -----------------
 
@@ -124,6 +141,10 @@ SEE ALSO
 ========
 
 [GD Source Repository](https://github.com/libgd).
+
+[Alternate Raku module linking to GD](https://raku.land/zef:raku-community-modules/GD::Raw)
+
+A few examples and a few development notes: [https://github.com/jforget/raku-sandbox-GD/](https://github.com/jforget/raku-sandbox-GD/)
 
 COPYRIGHT AND LICENSE
 =====================

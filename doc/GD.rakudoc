@@ -117,6 +117,8 @@ The Raku API
 
 =head3 C<GD-small-font>
 
+=head3 C<GD-tiny-font>
+
 =head2 Memory Management
 
 =head3 C<destroy>
@@ -131,6 +133,8 @@ The Raku API
 L<GD Source Repository|https://github.com/libgd>.
 
 L<Alternate Raku module linking to GD|https://raku.land/zef:raku-community-modules/GD::Raw>
+
+A few examples and a few development notes: L<https://github.com/jforget/raku-sandbox-GD/>
 
 =head1 COPYRIGHT AND LICENSE
 

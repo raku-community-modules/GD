@@ -4,6 +4,8 @@
 # Vérification des contrôles de compatibilité entre "fill" et "GD-styled"
 # Checking the compatibility between "fill" and "GD-styled"
 #
+# TODO: each time a new feature is implemented, please activate the corresponding checking lines below, and adjust the plan
+#
 
 use Test;
 use GD;
@@ -86,6 +88,10 @@ $im.destroy;
 
 This program runs  several variants of the drawing  methods, to ensure
 that the various values of C<fill> and C<color> are properly checked.
+
+In this version,  only C<GD-styled> is checked.  When implementing the
+other features (C<GD-brushed>, etc),  activate the corresponding lines
+by removing the comment mark and increase the plan number.
 
 =head1 PARAMETERS
 

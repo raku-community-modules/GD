@@ -4,7 +4,7 @@
   "specVersion": "1.6",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-06-18T21:33:27+00:00",
+    "timestamp": "2026-06-29T20:10:36+00:00",
     "lifecycles": [
       {
         "phase": "pre-build"
@@ -23,7 +23,7 @@
     "component": {
       "type": "library",
       "mime-type": "text/plain",
-      "bom-ref": "pkg:raku/zef:raku-community-modules/GD@0.0.4:1.0",
+      "bom-ref": "pkg:raku/zef:raku-community-modules/GD@0.0.5:1.0",
       "authors": [
         {
           "bom-ref": "HenriqueDias",
@@ -37,7 +37,7 @@
       "publisher": "zef",
       "group": "zef:raku-community-modules",
       "name": "GD",
-      "version": "0.0.4",
+      "version": "0.0.5",
       "description": "Raku interface to the GD graphics library.",
       "scope": "required",
       "licenses": [
@@ -49,14 +49,14 @@
           }
         }
       ],
-      "purl": "pkg:raku/zef:raku-community-modules/GD@0.0.4:1.0",
+      "purl": "pkg:raku/zef:raku-community-modules/GD@0.0.5:1.0",
       "externalReferences": [
         {
           "url": "https://github.com/raku-community-modules/GD",
           "type": "distribution"
         },
         {
-          "url": "https://raku.land/zef:raku-community-modules/GD?v=0.0.4",
+          "url": "https://raku.land/zef:raku-community-modules/GD?v=0.0.5",
           "type": "documentation"
         },
         {
@@ -68,7 +68,7 @@
           "type": "license"
         },
         {
-          "url": "https://github.com/raku-community-modules/GD/archive/refs/tags/0.0.4.zip",
+          "url": "https://github.com/raku-community-modules/GD/archive/refs/tags/0.0.5.zip",
           "type": "source-distribution"
         },
         {
@@ -168,7 +168,7 @@
       "publisher": "Rakudo Core Developers",
       "group": "Rakudo Core Developers",
       "name": "Rakudo",
-      "version": "2026.05-137-g5eee34b56",
+      "version": "2026.06-28-g4b68e9471",
       "description": "The Rakudo™ Compiler implementing the Raku® Programming Language",
       "scope": "required",
       "licenses": [
@@ -191,7 +191,7 @@
           "type": "issue-tracker"
         },
         {
-          "url": "https://github.com/rakudo/rakudo/archive/5eee34b56.zip",
+          "url": "https://github.com/rakudo/rakudo/archive/4b68e9471.zip",
           "type": "source-distribution"
         },
         {
@@ -212,7 +212,7 @@
       "publisher": "The MoarVM Team",
       "group": "The MoarVM Team",
       "name": "Moar",
-      "version": "2026.05.1-11-gc68094f8b",
+      "version": "2026.06",
       "description": "Short for \"Metamodel On A Runtime\", MoarVM is a modern virtual machine built for the Rakudo compiler and the NQP Compiler Toolchain.",
       "scope": "required",
       "licenses": [
@@ -239,7 +239,7 @@
           "type": "chat"
         },
         {
-          "url": "https://github.com/MoarVM/MoarVM.git/archive/refs/tags/c68094f8b.zip",
+          "url": "https://github.com/MoarVM/MoarVM.git/archive/refs/tags/2026.06.zip",
           "type": "source-distribution"
         }
       ]
@@ -417,7 +417,7 @@
       "type": "distribution"
     },
     {
-      "url": "https://raku.land/zef:raku-community-modules/GD?v=0.0.4",
+      "url": "https://raku.land/zef:raku-community-modules/GD?v=0.0.5",
       "type": "documentation"
     },
     {
@@ -429,7 +429,7 @@
       "type": "license"
     },
     {
-      "url": "https://github.com/raku-community-modules/GD/archive/refs/tags/0.0.4.zip",
+      "url": "https://github.com/raku-community-modules/GD/archive/refs/tags/0.0.5.zip",
       "type": "source-distribution"
     },
     {

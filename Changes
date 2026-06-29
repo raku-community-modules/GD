@@ -2,7 +2,7 @@ Revision history for GD
 
 {{$NEXT}}
 
-0.0.5  2026-06-25
+0.0.5  2026-06-29T22:10:01+02:00
     - add method string() to print text within images
     - add method set-style() to print dotted lines, dotted rectangles and dotted polygons
 

@@ -4,10 +4,15 @@ use NativeHelpers::Blob:ver<0.1.12+>:auth<zef:raku-community-modules>;
 use LibraryCheck:ver<0.0.12+>:auth<zef:jonathanstowe>;
 
 our enum GD_Format <GD_GIF GD_JPEG GD_PNG>;
-subset ColorValue of Int:D where 0 <= * <= 255;
-subset PInt       of Int:D where * > 0;
+constant GD-styled          is export = -2;
+constant GD-brushed         is export = -3;
+constant GD-styled-brushed  is export = -4;
+constant GD-tiled           is export = -5;
+subset ColorValue  of Int:D where 0 ≤ * ≤ 255;
+subset PInt        of Int:D where * > 0;
+subset PseudoColor of Int:D where ($_ ≥ 0 or $_ == GD-styled | GD-brushed | GD-styled-brushed | GD-tiled);
 
-module GD:ver<0.0.4> {
+module GD:ver<0.0.5> {
 
     my Str $lib;
 
@@ -32,7 +37,22 @@ module GD:ver<0.0.4> {
     }
 
     constant LIB =  &find-lib-version;
+    constant GD-transparent is export = -6;
 
+    sub GD-giant-font ( --> OpaquePointer )
+        is native(LIB) is export is symbol('gdFontGetGiant') {*}
+
+    sub GD-large-font ( --> OpaquePointer )
+        is native(LIB) is export is symbol('gdFontGetLarge') {*}
+
+    sub GD-medium-bold-font ( --> OpaquePointer )
+        is native(LIB) is export is symbol('gdFontGetMediumBold') {*}
+
+    sub GD-small-font ( -->  OpaquePointer )
+        is native(LIB) is export is symbol('gdFontGetSmall') {*}
+
+    sub GD-tiny-font ( --> OpaquePointer )
+        is native(LIB) is export is symbol('gdFontGetTiny') {*}
 
     my $errno := cglobal(Str, 'errno', int32);
 
@@ -161,6 +181,12 @@ module GD:ver<0.0.4> {
           GD::Image, int32, int32, int32
         ) is native(LIB) { ... }
 
+        sub gdImageSetStyle(
+          GD::Image      $im,
+          CArray[int32],
+          int32          $no-of-pixels
+        ) is native(LIB) { ... }
+
         sub gdImageSetThickness(
           GD::Image $im, int32 $thickness
         ) is native(LIB) {*}
@@ -205,10 +231,49 @@ module GD:ver<0.0.4> {
           GD::Image, CArray[int32], int32, int32
         ) is native(LIB) { ... }
 
+        sub gdImageString(
+          GD::Image $im, OpaquePointer $font, int32 $x, int32 $y, Str, int32 $color
+        ) is native(LIB) { ... }
+
+        sub gdImageStringUp(
+          GD::Image $im, OpaquePointer $font, int32 $x, int32 $y, Str, int32 $color
+        ) is native(LIB) { ... }
+
         sub gdFree( OpaquePointer) is native(LIB) { ... }
 
         sub gdImageDestroy(GD::Image) is native(LIB) { ... }
 
+        sub check-compat(Int $fill, Int $color-or-style) {
+          if $fill {
+            if $color-or-style == GD-styled {
+              die "a filled shape cannot use a style";
+            }
+            # TODO:
+            # activate these tests when implementing new features
+            # and activate the corresponding checks in xt/070-fatal-styled.rakutest
+            #if $color-or-style == GD-brushed {
+            #  die "a filled shape cannot use a brush";
+            #}
+            #if $color-or-style == GD-styled-brushed {
+            #  die "a filled shape cannot use a style and a brush";
+            #}
+          }
+          else {
+            #if $color-or-style == GD-tiled {
+            #  die "an empty shape cannot use tiling";
+            #}
+          }
+          # remove these tests when implementing new features
+          if $color-or-style == GD-brushed {
+            die "brushes are not implemented yet";
+          }
+          if $color-or-style == GD-styled-brushed {
+            die "combinations style + brush are not implemented yet";
+          }
+          if $color-or-style == GD-tiled {
+            die "tiling is not implemented yet";
+          }
+        }
         ### METHODS ###
 
         method new(Int:D $width, Int:D $height) {
@@ -247,24 +312,34 @@ module GD:ver<0.0.4> {
             gdImageSetPixel(self, $x, $y, $color)
         }
 
+        method set-style(@style) {
+            my Int $no-of-pixels = @style.elems;
+            my $array            = CArray[int32].allocate($no-of-pixels);
+            for @style.kv -> $i, $v {
+              $array[$i] = $v;
+            }
+            gdImageSetStyle(self, $array, $no-of-pixels);
+        }
+
         method setThickness(UInt $thickness) {
             gdImageSetThickness(self, $thickness);
         }
 
         method line(
-          List:D :$start (UInt $x1, UInt $y1) = (0, 0),
-          List:D :$end!  (UInt $x2, UInt $y2),
-          UInt   :$color = 0
+          List:D      :$start (UInt $x1, UInt $y1) = (0, 0),
+          List:D      :$end!  (UInt $x2, UInt $y2),
+          PseudoColor :$color = 0,
         ) {
             gdImageLine(self, $x1, $y1, $x2, $y2, $color)
         }
 
         multi method rectangle(
-          List:D :$location (UInt $x1, UInt $y1) = (0, 0),
-          List:D :$size! (Int:D $dx, Int:D $dy),
-          UInt   :$color = 0,
-          Bool   :$fill
+          List:D      :$location (UInt  $x1, UInt  $y1) = (0, 0),
+          List:D      :$size!    (Int:D $dx, Int:D $dy),
+          PseudoColor :$color = 0,
+          Bool        :$fill
         ) {
+            check-compat($fill, $color);
             my Int $x2 = $x1 + $dx - 1;
             my Int $y2 = $y1 + $dy - 1;
             $x2 = $x1 + 1 + $dx if $dx < 0;
@@ -276,22 +351,24 @@ module GD:ver<0.0.4> {
         }
 
         multi method rectangle(
-          List:D :$location      (UInt $x1, UInt $y1) = (0, 0),
-          List:D :$alt-location! (UInt $x2, UInt $y2),
-          UInt   :$color = 0,
-          Bool   :$fill
+          List:D      :$location      (UInt $x1, UInt $y1) = (0, 0),
+          List:D      :$alt-location! (UInt $x2, UInt $y2),
+          PseudoColor :$color = 0,
+          Bool        :$fill
         ) {
+            check-compat($fill, $color);
             $fill
               ?? gdImageFilledRectangle(self, $x1, $y1, $x2, $y2, $color)
               !! gdImageRectangle(      self, $x1, $y1, $x2, $y2, $color)
         }
 
         multi method rectangle(
-          List:D :$center     (UInt $x0, UInt $y0) = (0, 0),
-          List:D :$half-size! (UInt $dx, UInt $dy),
-          UInt   :$color = 0,
-          Bool   :$fill
+          List:D      :$center     (UInt $x0, UInt $y0) = (0, 0),
+          List:D      :$half-size! (UInt $dx, UInt $dy),
+          PseudoColor :$color = 0,
+          Bool        :$fill
         ) {
+            check-compat($fill, $color);
             $fill
               ?? gdImageFilledRectangle(self, $x0 - $dx, $y0 - $dy, $x0 + $dx, $y0 + $dy, $color)
               !! gdImageRectangle(      self, $x0 - $dx, $y0 - $dy, $x0 + $dx, $y0 + $dy, $color)
@@ -334,12 +411,13 @@ module GD:ver<0.0.4> {
         }
 
         method polygon(
-          Int:D :@points! where { @points.elems >= 6 && @points.elems % 2 == 0 },
-          UInt  :$color = 0,
-          Bool  :$fill,
-          Bool  :$open
+          Int:D       :@points! where { @points.elems ≥ 6 && @points.elems % 2 == 0 },
+          PseudoColor :$color = 0,
+          Bool        :$fill,
+          Bool        :$open
         --> CArray[int32]) {
 
+            check-compat($fill, $color);
             my $n_array = @points.elems;
             my $gdPoints = GD_new_set_of_points(($n_array/2).Int);
 
@@ -356,6 +434,21 @@ module GD:ver<0.0.4> {
                 !! gdImagePolygon(self, $gdPoints, $n, $color);
 
             $gdPoints
+        }
+
+        method string(
+          OpaquePointer :$font,
+          List          :$location (Int $x1 where { $x1 ≥ 0 }, Int $y1 where { $y1 ≥ 0 }) = (0, 0),
+          Str           :$text,
+          Int           :$color where { $color ≥ 0 } = 0,
+          Bool          :$up = False
+        ) {
+            if $up {
+              gdImageStringUp(self, $font, $x1, $y1, $text, $color);
+            }
+            else {
+              gdImageString(  self, $font, $x1, $y1, $text, $color);
+            }
         }
 
         method open(Str() $filename, Str $mode --> GD::File ) {

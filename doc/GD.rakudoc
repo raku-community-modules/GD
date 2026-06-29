@@ -67,6 +67,8 @@ The Raku API
 
 =head3 C<pixel>
 
+=head3 C<set-style>
+
 =head3 C<setThickness>
 
 =head3 C<line>
@@ -80,6 +82,8 @@ The Raku API
 =head3 C<ellipse>
 
 =head3 C<polygon>
+
+=head3 C<string>
 
 =head2 Output Methods
 
@@ -103,6 +107,18 @@ The Raku API
 
 =head3 C<webp>
 
+=head2 Fonts
+
+=head3 C<GD-giant-font>
+
+=head3 C<GD-large-font>
+
+=head3 C<GD-medium-bold-font>
+
+=head3 C<GD-small-font>
+
+=head3 C<GD-tiny-font>
+
 =head2 Memory Management
 
 =head3 C<destroy>
@@ -115,6 +131,10 @@ The Raku API
 =head1 SEE ALSO
 
 L<GD Source Repository|https://github.com/libgd>.
+
+L<Alternate Raku module linking to GD|https://raku.land/zef:raku-community-modules/GD::Raw>
+
+A few examples and a few development notes: L<https://github.com/jforget/raku-sandbox-GD/>
 
 =head1 COPYRIGHT AND LICENSE
 
